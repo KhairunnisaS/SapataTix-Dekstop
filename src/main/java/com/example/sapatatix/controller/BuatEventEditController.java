@@ -84,6 +84,8 @@ public class BuatEventEditController {
                                 }
                             });
                         } else {
+                            System.out.println("Kode respons: " + response.code());
+                            System.out.println("Isi respons: " + response.body().string());
                             showAlert("Gagal", "Gagal menyimpan event. Kode: " + response.code());
                         }
                     }
