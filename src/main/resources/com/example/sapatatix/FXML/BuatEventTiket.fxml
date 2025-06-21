@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="720.0" prefWidth="1280.0" style="-fx-background-color: #0F1017;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sapatatix.BerandaFix">
+    <children>
+        <ImageView fitHeight="720.0" fitWidth="1280.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@../Gambar/Background.png" />
+            </image>
+        </ImageView>
+
+        <VBox alignment="TOP_CENTER" prefHeight="720.0" prefWidth="250.0" style="-fx-background-color: #0F1017;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <VBox alignment="CENTER" spacing="10.0">
+                    <padding>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                    </padding>
+                    <children>
+                        <ImageView fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="https://placehold.co/80x80/cccccc/333333?text=Profil" />
+                            </image>
+                        </ImageView>
+                        <Label text="Pengguna" textFill="WHITE">
+                            <font>
+                                <Font name="Segoe UI Bold" size="16.0" />
+                            </font>
+                        </Label>
+                        <Label text="E-mail Pengguna" textFill="#9e9e9e">
+                            <font>
+                                <Font name="Segoe UI" size="12.0" />
+                            </font>
+                        </Label>
+                    </children>
+                </VBox>
+
+                <VBox prefWidth="250.0">
+                    <children>
+                  <Button alignment="CENTER_LEFT" layoutX="10.0" layoutY="101.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="250.0" style="-fx-background-color: transparent; -fx-background-radius: 0;" text="Events" textFill="WHITE">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="https://placehold.co/20x20/cccccc/333333?text=H" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <padding>
+                        <Insets left="20.0" />
+                     </padding>
+                     <font>
+                        <Font name="Segoe UI" size="14.0" />
+                     </font>
+                  </Button>
+
+                        <Button fx:id="createEventNavBtn" alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="250.0" style="-fx-background-color: #B83D6E; -fx-background-radius: 0;" text="Buat Event" textFill="WHITE">
+                            <graphic>
+                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="https://placehold.co/20x20/ffffff/000000?text=+" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                            <padding>
+                                <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />
+                            </padding>
+                            <font>
+                                <Font name="Segoe UI Bold" size="16.0" />
+                            </font>
+                        </Button>
+                        <Button alignment="CENTER_LEFT" mnemonicParsing="false" prefHeight="40.0" prefWidth="250.0" style="-fx-background-color: transparent; -fx-background-radius: 0;" text="Riwayat" textFill="WHITE">
+                            <graphic>
+                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="https://placehold.co/20x20/cccccc/333333?text=H" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                            <padding>
+                                <Insets left="20.0" />
+                            </padding>
+                            <font>
+                                <Font name="Segoe UI" size="14.0" />
+                            </font>
+                        </Button>
+                        <Button alignment="CENTER_LEFT" mnemonicParsing="false" prefHeight="40.0" prefWidth="250.0" style="-fx-background-color: transparent; -fx-background-radius: 0;" text="Profil" textFill="WHITE">
+                            <graphic>
+                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="https://placehold.co/20x20/cccccc/333333?text=P" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                            <padding>
+                                <Insets left="20.0" />
+                            </padding>
+                            <font>
+                                <Font name="Segoe UI" size="14.0" />
+                            </font>
+                        </Button>
+                    </children>
+                </VBox>
+                <Region VBox.vgrow="ALWAYS" />
+            <Button fx:id="loginBtn" prefHeight="50.0" prefWidth="97.0" style="-fx-background-color: #c00c0c; -fx-background-radius: 8;" text="Keluar" textFill="WHITE">
+               <padding>
+                  <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />
+               </padding>
+               <font>
+                  <Font name="Segoe UI Bold" size="16.0" />
+               </font>
+               <VBox.margin>
+                  <Insets bottom="30.0" />
+               </VBox.margin>
+            </Button>
+            </children>
+        </VBox>
+
+        <VBox layoutX="250.0" prefHeight="720.0" prefWidth="1030.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="250.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <HBox alignment="CENTER_LEFT" prefHeight="70.0" style="-fx-background-color: #0F1017;">
+                    <padding>
+                        <Insets left="20.0" right="20.0" />
+                    </padding>
+                    <children>
+                  <ImageView fitHeight="40.0" fitWidth="175.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../Gambar/Logo.png" />
+                     </image>
+                  </ImageView>
+                    </children>
+                </HBox>
+
+                <VBox alignment="CENTER" VBox.vgrow="ALWAYS">
+                    <children>
+                        <VBox alignment="TOP_CENTER" prefHeight="652.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 25 25 0 0;">
+                            <padding>
+                                <Insets bottom="20.0" left="40.0" right="40.0" top="20.0" />
+                            </padding>
+                            <children>
+                                <Label text="Buat Event Baru" textFill="#333333">
+                                    <font>
+                                        <Font name="Segoe UI Bold" size="24.0" />
+                                    </font>
+                                    <VBox.margin>
+                                        <Insets bottom="15.0" />
+                                    </VBox.margin>
+                                </Label>
+
+                                <HBox alignment="CENTER" spacing="50.0">
+                                    <children>
+                              <Label layoutX="397.0" layoutY="10.0" text="Edit" textFill="#333333">
+                                 <font>
+                                    <Font name="Segoe UI Bold" size="16.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutX="589.0" layoutY="10.0" text="Banner" textFill="#333333">
+                                 <font>
+                                    <Font name="Segoe UI Bold" size="16.0" />
+                                 </font>
+                              </Label>
+                                        <Label style="-fx-underline: true;" text="Tiket" textFill="#b83d6e">
+                                            <font>
+                                                <Font name="Segoe UI Bold" size="16.0" />
+                                            </font>
+                                        </Label>
+                                        <Label text="Pratinjau" textFill="#333333">
+                                            <font>
+                                                <Font name="Segoe UI" size="16.0" />
+                                            </font>
+                                        </Label>
+                                    </children>
+                                    <VBox.margin>
+                                        <Insets bottom="20.0" />
+                                    </VBox.margin>
+                                </HBox>
+
+                                <!-- Ticket Content Section (Rewritten) -->
+                                <VBox alignment="TOP_CENTER" prefWidth="600.0" spacing="20.0">
+                                    <children>
+                                        <Label text="Jenis event apa yang ingin dibuat?" textFill="#333333">
+                                            <font>
+                                                <Font name="Segoe UI Bold" size="18.0" />
+                                            </font>
+                                        </Label>
+                                        <HBox alignment="CENTER" spacing="30.0">
+                                            <children>
+                                                <VBox fx:id="paidEventVBox" alignment="CENTER" prefHeight="150.0" prefWidth="250.0" style="-fx-background-color: #F5F5F5; -fx-background-radius: 10; -fx-border-color: #B83D6E; -fx-border-width: 2;">
+                                                    <padding>
+                                                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                                    </padding>
+                                                    <children>
+                                                        <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+                                                            <image>
+                                                                <Image url="https://placehold.co/60x60/B83D6E/ffffff?text=Ticket" />
+                                                            </image>
+                                                            <VBox.margin>
+                                                                <Insets bottom="5.0" />
+                                                            </VBox.margin>
+                                                        </ImageView>
+                                                        <Label text="Event Berbayar" textFill="#333333">
+                                                            <font>
+                                                                <Font name="Segoe UI Bold" size="14.0" />
+                                                            </font>
+                                                        </Label>
+                                                        <Label text="Tiket dibutuhkan untuk mengikuti event" textAlignment="CENTER" textFill="#666666" wrapText="true">
+                                                            <font>
+                                                                <Font name="Segoe UI" size="12.0" />
+                                                            </font>
+                                                        </Label>
+                                                    </children>
+                                                </VBox>
+                                                <VBox fx:id="freeEventVBox" alignment="CENTER" prefHeight="150.0" prefWidth="250.0" style="-fx-background-color: #F5F5F5; -fx-background-radius: 10; -fx-border-color: #CCCCCC; -fx-border-width: 1;">
+                                                    <padding>
+                                                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                                    </padding>
+                                                    <children>
+                                                        <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+                                                            <image>
+                                                                <Image url="https://placehold.co/60x60/CCCCCC/333333?text=FREE" />
+                                                            </image>
+                                                            <VBox.margin>
+                                                                <Insets bottom="5.0" />
+                                                            </VBox.margin>
+                                                        </ImageView>
+                                                        <Label text="Event Gratis" textFill="#333333">
+                                                            <font>
+                                                                <Font name="Segoe UI Bold" size="14.0" />
+                                                            </font>
+                                                        </Label>
+                                                        <Label text="Event tidak dipungut biaya" textAlignment="CENTER" textFill="#666666" wrapText="true">
+                                                            <font>
+                                                                <Font name="Segoe UI" size="12.0" />
+                                                            </font>
+                                                        </Label>
+                                                    </children>
+                                                </VBox>
+                                            </children>
+                                        </HBox>
+
+                                        <Label text="Isi detail tiket yang akan dijual" textFill="#333333">
+                                            <font>
+                                                <Font name="Segoe UI Bold" size="18.0" />
+                                            </font>
+                                            <VBox.margin>
+                                                <Insets top="20.0" />
+                                            </VBox.margin>
+                                        </Label>
+                                        <HBox spacing="15.0">
+                                            <children>
+                                                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                                                    <children>
+                                                        <Label text="Nama Tiket" textFill="#666666">
+                                                            <font>
+                                                                <Font name="Segoe UI" size="14.0" />
+                                                            </font>
+                                                        </Label>
+                                                        <TextField fx:id="ticketNameField" promptText="Masukkan nama tiket (cth: Reguler, VIP, Early Bird)" style="-fx-background-color: #F5F5F5; -fx-background-radius: 8; -fx-text-fill: #333333;">
+                                                            <padding>
+                                                                <Insets bottom="8.0" left="15.0" right="15.0" top="8.0" />
+                                                            </padding>
+                                                            <font>
+                                                                <Font name="Segoe UI" size="14.0" />
+                                                            </font>
+                                                        </TextField>
+                                                    </children>
+                                                </VBox>
+                                                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                                                    <children>
+                                                        <Label text="Ticket Price (per unit)" textFill="#666666">
+                                                            <font>
+                                                                <Font name="Segoe UI" size="14.0" />
+                                                            </font>
+                                                        </Label>
+                                                        <HBox alignment="CENTER_LEFT" style="-fx-background-color: #F5F5F5; -fx-background-radius: 8;">
+                                                            <children>
+                                                                <Label text="Rp" textFill="#333333">
+                                                                    <font>
+                                                                        <Font name="Segoe UI" size="14.0" />
+                                                                    </font>
+                                                                    <padding>
+                                                                        <Insets left="15.0" />
+                                                                    </padding>
+                                                                </Label>
+                                                                <TextField fx:id="ticketPriceField" promptText="0.00" style="-fx-background-color: transparent; -fx-text-fill: #333333; -fx-border-color: transparent;" HBox.hgrow="ALWAYS">
+                                                                    <padding>
+                                                                        <Insets bottom="8.0" right="15.0" top="8.0" />
+                                                                    </padding>
+                                                                    <font>
+                                                                        <Font name="Segoe UI" size="14.0" />
+                                                                    </font>
+                                                                </TextField>
+                                                            </children>
+                                                        </HBox>
+                                                    </children>
+                                                </VBox>
+                                            </children>
+                                        </HBox>
+                                        <Label text="Total Tiket yang Dijual" textFill="#333333">
+                                            <font>
+                                                <Font name="Segoe UI Bold" size="18.0" />
+                                            </font>
+                                            <VBox.margin>
+                                                <Insets top="20.0" />
+                                            </VBox.margin>
+                                        </Label>
+                                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                            <children>
+                                                <Button fx:id="minusButton" style="-fx-background-color: #F5F5F5; -fx-background-radius: 8; -fx-border-color: #CCCCCC; -fx-border-width: 1;" text="-" textFill="#333333">
+                                                    <padding>
+                                                        <Insets bottom="8.0" left="15.0" right="15.0" top="8.0" />
+                                                    </padding>
+                                                    <font>
+                                                        <Font name="Segoe UI Bold" size="14.0" />
+                                                    </font>
+                                                </Button>
+                                                <TextField fx:id="totalTicketsField" alignment="CENTER" editable="false" prefWidth="50.0" style="-fx-background-color: #F5F5F5; -fx-background-radius: 8; -fx-text-fill: #333333;" text="1">
+                                                    <padding>
+                                                        <Insets bottom="8.0" left="5.0" right="5.0" top="8.0" />
+                                                    </padding>
+                                                    <font>
+                                                        <Font name="Segoe UI" size="14.0" />
+                                                    </font>
+                                                </TextField>
+                                                <Button fx:id="plusButton" style="-fx-background-color: #F5F5F5; -fx-background-radius: 8; -fx-border-color: #CCCCCC; -fx-border-width: 1;" text="+" textFill="#333333">
+                                                    <padding>
+                                                        <Insets bottom="8.0" left="15.0" right="15.0" top="8.0" />
+                                                    </padding>
+                                                    <font>
+                                                        <Font name="Segoe UI Bold" size="14.0" />
+                                                    </font>
+                                                </Button>
+                                            </children>
+                                        </HBox>
+                                    </children>
+                                </VBox>
+
+                                <!-- Buttons Section (Kembali and Simpan & Lanjutkan) -->
+                                <HBox alignment="CENTER_RIGHT" spacing="15.0">
+                                    <children>
+                                        <Button style="-fx-background-color: #F5F5F5; -fx-background-radius: 8; -fx-text-fill: #333333;" text="Kembali">
+                                            <padding>
+                                                <Insets bottom="15.0" left="30.0" right="30.0" top="15.0" />
+                                            </padding>
+                                            <font>
+                                                <Font name="Segoe UI Bold" size="16.0" />
+                                            </font>
+                                        </Button>
+                                        <Button style="-fx-background-color: #B83D6E; -fx-background-radius: 8;" text="Simpan &amp; Lanjutkan" textFill="WHITE">
+                                            <padding>
+                                                <Insets bottom="15.0" left="30.0" right="30.0" top="15.0" />
+                                            </padding>
+                                            <font>
+                                                <Font name="Segoe UI Bold" size="16.0" />
+                                            </font>
+                                        </Button>
+                                    </children>
+                                    <VBox.margin>
+                                        <Insets top="20.0" />
+                                    </VBox.margin>
+                                </HBox>
+                            </children>
+                        </VBox>
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>

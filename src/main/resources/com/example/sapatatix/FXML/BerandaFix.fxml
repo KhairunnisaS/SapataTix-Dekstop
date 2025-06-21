@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="720.0" prefWidth="1280.0" style="-fx-background-color: #0F1017;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sapatatix.controller.BerandaFixController">
+    <children>
+      <ImageView fitHeight="720.0" fitWidth="1280.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../Gambar/Background.png" />
+         </image>
+      </ImageView>
+
+        <!-- Header/Navigation Bar -->
+        <AnchorPane prefHeight="80.0" prefWidth="1280.0" style="-fx-background-color: #0F1017;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Button fx:id="btnDaftar" layoutX="1140.0" layoutY="20.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="85.0" style="-fx-background-radius: 8; -fx-background-color: #e91e63;" text="Daftar" textFill="WHITE" onAction="#handleDaftar">
+               <font>
+                  <Font name="Segoe UI Bold" size="12.0" />
+               </font></Button>
+            <Button fx:id="btnMasuk" layoutX="1040.0" layoutY="20.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="85.0" style="-fx-background-radius: 20; -fx-background-color: transparent;" text="Masuk" textFill="WHITE" onAction="#handleMasuk" />
+            <Button fx:id="btnBuatEvent" layoutX="945.0" layoutY="20.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="85.0" style="-fx-background-radius: 20; -fx-background-color: transparent;" text="Buat Event" textFill="WHITE" onAction="#handleMasuk" />
+            <ImageView fitHeight="40.0" fitWidth="175.0" layoutX="54.0" layoutY="20.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../Gambar/Logo.png" />
+               </image>
+            </ImageView>
+         </children></AnchorPane>
+      <HBox alignment="CENTER" layoutX="91.0" layoutY="168.0" spacing="80.0">
+         <children>
+            <VBox alignment="CENTER_LEFT" prefWidth="615.0" spacing="20.0">
+               <children>
+                  <Label text="Selamat Datang di" textFill="WHITE">
+                     <font>
+                        <Font name="Georgia Bold" size="48.0" />
+                     </font>
+                  </Label>
+                  <Label text="SapataTix: Permudah" textFill="WHITE">
+                     <font>
+                        <Font name="Georgia Bold" size="48.0" />
+                     </font>
+                  </Label>
+                  <Label text="aksesmu ke Semua" textFill="WHITE">
+                     <font>
+                        <Font name="Georgia Bold" size="48.0" />
+                     </font>
+                  </Label>
+                  <Label text="Acara Seru di SUMUT!" textFill="WHITE">
+                     <font>
+                        <Font name="Georgia Bold" size="48.0" />
+                     </font>
+                  </Label>
+                  <Label style="-fx-font-size: 16px;" text="Nggak cuma healing, tapi juga feeling! Cari vibes Sumut yang otentik bareng SapataTix—event seru tinggal klik!" textFill="WHITE" wrapText="true">
+                     <font>
+                        <Font name="Segoe UI Bold" size="12.0" />
+                     </font>
+                     <padding>
+                        <Insets bottom="20.0" />
+                     </padding>
+                  </Label>
+                  <Button fx:id="btnDaftarSekarang" style="-fx-background-color: #e91e63; -fx-background-radius: 8;" text="Daftar Sekarang" textFill="WHITE" onAction="#handleDaftar">
+                     <padding>
+                        <Insets bottom="15.0" left="30.0" right="30.0" top="15.0" />
+                     </padding>
+                     <font>
+                        <Font name="Segoe UI Bold" size="14.0" />
+                     </font>
+                  </Button>
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+      <ImageView fitHeight="513.0" fitWidth="473.0" layoutX="755.0" layoutY="135.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../Gambar/HeroImages.png" />
+         </image>
+      </ImageView>
+    </children>
+</AnchorPane>
