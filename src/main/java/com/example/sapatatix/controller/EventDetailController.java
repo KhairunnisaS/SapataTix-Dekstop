@@ -2,27 +2,28 @@ package com.example.sapatatix.controller;
 
 import com.example.sapatatix.service.TransactionData;
 import com.example.sapatatix.service.SupabaseService;
-import javafx.application.Platform;
+import com.example.sapatatix.model.Event; // Import kelas Event model
+import com.example.sapatatix.model.Ticket; // Import kelas Ticket model
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.json.JSONArray;
-import org.json.JSONObject;
+import org.json.JSONObject; // Tetap diperlukan untuk parsing awal dari Supabase
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
-
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
 
 public class EventDetailController {
 
@@ -34,59 +35,43 @@ public class EventDetailController {
     @FXML private Label detailDeskripsiLabel;
     @FXML private Label detailHostLabel;
     @FXML private Label detailTicketInfoLabel;
+    @FXML private Label detailJenisSpesifikLabel; // Tambahkan ini jika Anda ingin menampilkan jenis spesifik event
+    @FXML private Label detailTambahanLabel;     // Tambahkan ini jika Anda ingin menampilkan detail tambahan event
 
     private Stage dialogStage;
-    private JSONObject eventData;
+    private Event eventData; // Ganti JSONObject menjadi objek Event dari model
 
     public void setDialogStage(Stage dialogStage) {
         this.dialogStage = dialogStage;
     }
 
-    public void setEventDetails(JSONObject event) {
+    // Metode ini sekarang menerima objek Event dari model
+    public void setEventDetails(Event event) {
         this.eventData = event;
-        detailJudulHeaderLabel.setText(event.optString("judul", "Detail Event"));
+        detailJudulHeaderLabel.setText(event.getJudul());
 
-        // Set Date
-        String tanggalMulai = event.optString("tanggal_mulai", "");
-        if (!tanggalMulai.isEmpty()) {
-            try {
-                LocalDate date = LocalDate.parse(tanggalMulai);
-                DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("EEEE, dd MMMM");
-                detailTanggalLabel.setText(date.format(dateFormatter));
-            } catch (Exception e) {
-                detailTanggalLabel.setText("Tanggal Tidak Valid");
-            }
-        } else {
-            detailTanggalLabel.setText("Tanggal Tidak Tersedia");
+        // Menggunakan getter dari objek Event untuk tanggal dan waktu
+        detailTanggalLabel.setText(event.getFormattedTanggal());
+        detailWaktuLabel.setText(event.getFormattedWaktu());
+
+        detailTempatLabel.setText(event.getTempat());
+        detailDeskripsiLabel.setText(event.getDeskripsi());
+        detailHostLabel.setText(event.getNamaHost());
+
+        // Menampilkan detail polimorfik (dari subclass Event)
+        if (detailJenisSpesifikLabel != null) {
+            detailJenisSpesifikLabel.setText(event.getJenisSpesifik());
+        }
+        if (detailTambahanLabel != null) {
+            detailTambahanLabel.setText(event.getDetailTambahan());
         }
 
-        // Set Time
-        String waktuMulai = event.optString("waktu_mulai", "");
-        String waktuBerakhir = event.optString("waktu_berakhir", "");
-        if (!waktuMulai.isEmpty() && !waktuBerakhir.isEmpty()) {
-            try {
-                LocalTime startTime = LocalTime.parse(waktuMulai);
-                LocalTime endTime = LocalTime.parse(waktuBerakhir);
-                DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a");
-                detailWaktuLabel.setText(startTime.format(timeFormatter) + " - " + endTime.format(timeFormatter));
-            } catch (Exception e) {
-                detailWaktuLabel.setText(waktuMulai + " - " + waktuBerakhir);
-            }
-        } else if (!waktuMulai.isEmpty()) {
-            detailWaktuLabel.setText(waktuMulai);
-        } else {
-            detailWaktuLabel.setText("Waktu Tidak Tersedia");
-        }
 
-        detailTempatLabel.setText(event.optString("tempat", ""));
-        detailDeskripsiLabel.setText(event.optString("deskripsi", ""));
-        detailHostLabel.setText(event.optString("nama_host", ""));
-
-        detailTicketInfoLabel.setText("IDR XX Tickets Available");
+        detailTicketInfoLabel.setText("IDR XX Tickets Available"); // Placeholder, akan diupdate dari objek Ticket
 
         // Load banner image
-        String bannerUrl = event.optString("banner_url", "");
-        if (!bannerUrl.isEmpty()) {
+        String bannerUrl = event.getBannerUrl();
+        if (bannerUrl != null && !bannerUrl.isEmpty()) {
             try {
                 detailImageView.setImage(new Image(bannerUrl));
             } catch (Exception e) {
@@ -105,18 +90,13 @@ public class EventDetailController {
         }
     }
 
-    // Metode handleBuyTicket() untuk memulai alur transaksi
     @FXML
     private void handleBuyTicket() {
-        String eventId = eventData.optString("id"); // Get the event ID
+        String eventId = eventData.getId(); // Menggunakan ID dari objek Event
 
         if (eventId == null || eventId.isEmpty()) {
             Platform.runLater(() -> {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setHeaderText(null);
-                alert.setContentText("Event ID is missing. Cannot proceed with ticket purchase.");
-                alert.showAndWait();
+                showAlert(Alert.AlertType.ERROR, "Error", "ID event tidak tersedia. Tidak dapat melanjutkan pembelian tiket.");
             });
             return;
         }
@@ -126,11 +106,7 @@ public class EventDetailController {
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
                 Platform.runLater(() -> {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Error");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Failed to retrieve ticket information: " + e.getMessage());
-                    alert.showAndWait();
+                    showAlert(Alert.AlertType.ERROR, "Error", "Gagal mengambil informasi tiket: " + e.getMessage());
                 });
             }
 
@@ -140,15 +116,21 @@ public class EventDetailController {
                 if (response.isSuccessful()) {
                     JSONArray jsonArray = new JSONArray(responseBody);
                     if (jsonArray.length() > 0) {
-                        JSONObject ticketJson = jsonArray.getJSONObject(0); // Assuming one ticket type per event for simplicity
+                        JSONObject ticketJson = jsonArray.getJSONObject(0); // Asumsi satu jenis tiket per event untuk kesederhanaan
 
                         Platform.runLater(() -> {
                             try {
-                                // Create new TransactionData and pass both event and ticket details
-                                TransactionData newTransaction = new TransactionData(eventData);
-                                newTransaction.setTicketId(ticketJson.optString("id")); // Set the ticket ID from the 'tiket' table
-                                newTransaction.setTicketType(ticketJson.optString("nama_tiket", "Tiket Reguler")); // Use nama_tiket from DB
-                                newTransaction.setTicketPrice(ticketJson.optDouble("harga", 0.0)); // Use harga from DB
+                                // Konversi JSONObject menjadi objek Ticket dari model
+                                Ticket ticketObject = Ticket.fromJson(ticketJson);
+
+                                // Buat objek TransactionData baru dan teruskan objek Event dan Ticket
+                                TransactionData newTransaction = new TransactionData(eventData); // Menggunakan eventData (objek Event)
+                                newTransaction.setTicketObject(ticketObject); // Set objek Ticket
+
+                                // Data tambahan yang sebelumnya disimpan di TransactionData bisa diambil dari ticketObject
+                                newTransaction.setTicketId(ticketObject.getId()); // ID dari objek Ticket
+                                newTransaction.setTicketType(ticketObject.getNamaTiket()); // Nama tiket dari objek Ticket
+                                newTransaction.setTicketPrice(ticketObject.calculatePrice()); // Harga tiket dari metode polimorfik
 
                                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/sapatatix/FXML/TicketSelectionPopup.fxml"));
                                 Parent root = loader.load();
@@ -168,28 +150,30 @@ public class EventDetailController {
                                 ticketSelectionStage.showAndWait();
                             } catch (IOException e) {
                                 e.printStackTrace();
-                                System.err.println("Failed to load Ticket Selection pop-up: " + e.getMessage());
+                                System.err.println("Gagal memuat pop-up Pemilihan Tiket: " + e.getMessage());
                             }
                         });
                     } else {
                         Platform.runLater(() -> {
-                            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                            alert.setTitle("Information");
-                            alert.setHeaderText(null);
-                            alert.setContentText("No ticket information found for this event.");
-                            alert.showAndWait();
+                            showAlert(Alert.AlertType.INFORMATION, "Informasi", "Tidak ada informasi tiket yang ditemukan untuk event ini.");
                         });
                     }
                 } else {
                     Platform.runLater(() -> {
-                        Alert alert = new Alert(Alert.AlertType.ERROR);
-                        alert.setTitle("Error");
-                        alert.setHeaderText(null);
-                        alert.setContentText("Failed to retrieve ticket information. Code: " + response.code() + ", Response: " + responseBody);
-                        alert.showAndWait();
+                        showAlert(Alert.AlertType.ERROR, "Error", "Gagal mengambil informasi tiket. Kode: " + response.code() + ", Respons: " + responseBody);
                     });
                 }
             }
+        });
+    }
+
+    private void showAlert(Alert.AlertType type, String title, String content) {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(type);
+            alert.setTitle(title);
+            alert.setHeaderText(null);
+            alert.setContentText(content);
+            alert.showAndWait();
         });
     }
 }

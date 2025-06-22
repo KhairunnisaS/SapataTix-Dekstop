@@ -1,6 +1,7 @@
 package com.example.sapatatix.controller;
 
 import com.example.sapatatix.service.SupabaseService;
+import com.example.sapatatix.model.Event; // Import kelas Event model
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -12,7 +13,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.TilePane;
-import javafx.stage.Modality; // Import Modality
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -21,7 +22,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import javafx.geometry.Insets;
 import javafx.scene.text.Font;
-import javafx.scene.input.MouseEvent; // Import MouseEvent for setOnMouseClicked
+import javafx.scene.input.MouseEvent;
+import javafx.scene.control.TextField; // Import TextField
+import javafx.scene.control.ComboBox; // Import ComboBox (not used in actual FXML, but might be from previous draft)
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -32,15 +35,42 @@ public class DashboardController {
     @FXML private Button buatEventBtn;
     @FXML private Button riwayatBtn;
     @FXML private Button profilBtn;
-    @FXML private TilePane eventTilePane; // fx:id untuk TilePane di FXML
+    @FXML private TilePane eventTilePane;
+
+    // FXML Elements for Search and Filter
+    @FXML private TextField searchInputField; // fx:id="searchInputField" di FXML
+    @FXML private Label allCategoryLabel;    // fx:id="allCategoryLabel" di FXML
+    @FXML private Label budayaCategoryLabel; // fx:id="budayaCategoryLabel" di FXML
+    @FXML private Label amalCategoryLabel;   // fx:id="amalCategoryLabel" di FXML
+    @FXML private Label pariwisataCategoryLabel; // fx:id="pariwisataCategoryLabel" di FXML
+
+    private String currentSelectedCategory = "All"; // Default kategori yang terpilih
+    private Label lastSelectedCategoryLabel; // Untuk menyimpan referensi label kategori yang terakhir dipilih
 
     @FXML
     public void initialize() {
-        loadEvents(); // Panggil metode untuk memuat event saat controller diinisialisasi
+        // Inisialisasi style untuk kategori "All" sebagai yang terpilih saat awal
+        allCategoryLabel.setStyle("-fx-underline: true; -fx-font-weight: bold; -fx-text-fill: #b83d6e;");
+        lastSelectedCategoryLabel = allCategoryLabel;
+
+        // Atur event handler untuk memicu pencarian/filter
+        if (searchInputField != null) {
+            searchInputField.setOnAction(event -> handleSearch()); // Trigger search on Enter in text field
+        }
+
+        // Atur event handler untuk klik label kategori
+        if (allCategoryLabel != null) allCategoryLabel.setOnMouseClicked(this::handleCategoryClick);
+        if (budayaCategoryLabel != null) budayaCategoryLabel.setOnMouseClicked(this::handleCategoryClick);
+        if (amalCategoryLabel != null) amalCategoryLabel.setOnMouseClicked(this::handleCategoryClick);
+        if (pariwisataCategoryLabel != null) pariwisataCategoryLabel.setOnMouseClicked(this::handleCategoryClick);
+
+
+        loadEvents(null, null); // Muat event awal tanpa filter
     }
 
-    private void loadEvents() {
-        SupabaseService.getEvents(new Callback() {
+    // Metode untuk memuat event dengan parameter pencarian dan kategori
+    private void loadEvents(String searchTerm, String category) {
+        SupabaseService.getEvents(searchTerm, category, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
@@ -49,23 +79,31 @@ public class DashboardController {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                String responseBody = response.body().string(); // Ambil body response hanya sekali
+                String responseBody = response.body().string();
 
                 if (response.isSuccessful()) {
                     JSONArray jsonArray = new JSONArray(responseBody);
 
                     Platform.runLater(() -> {
-                        eventTilePane.getChildren().clear(); // Hapus semua kartu event yang ada (jika ada)
+                        eventTilePane.getChildren().clear();
+                        if (jsonArray.length() == 0) {
+                            Label noResultsLabel = new Label("Tidak ada event yang ditemukan untuk kriteria ini.");
+                            noResultsLabel.setStyle("-fx-text-fill: white; -fx-font-size: 16px;");
+                            eventTilePane.getChildren().add(noResultsLabel);
+                            TilePane.setMargin(noResultsLabel, new Insets(50));
+                            return;
+                        }
+
                         for (int i = 0; i < jsonArray.length(); i++) {
-                            JSONObject event = jsonArray.getJSONObject(i);
+                            JSONObject eventJson = jsonArray.getJSONObject(i);
                             try {
-                                VBox eventCard = createEventCard(event);
-                                // PENTING: Tambahkan event handler untuk klik kartu
-                                eventCard.setOnMouseClicked(mouseEvent -> showEventDetail(event));
+                                Event eventObject = Event.fromJson(eventJson);
+                                VBox eventCard = createEventCard(eventObject);
+                                eventCard.setOnMouseClicked(mouseEvent -> showEventDetail(eventObject));
                                 eventTilePane.getChildren().add(eventCard);
                             } catch (Exception e) {
                                 e.printStackTrace();
-                                System.out.println("Gagal membuat kartu event untuk: " + event.optString("judul"));
+                                System.out.println("Gagal membuat kartu event untuk: " + eventJson.optString("judul"));
                             }
                         }
                     });
@@ -76,31 +114,55 @@ public class DashboardController {
         });
     }
 
-    // Metode ini membuat VBox (kartu event) dari data JSONObject
-    private VBox createEventCard(JSONObject event) {
+    // Metode untuk menangani aksi pencarian/filter dari UI
+    @FXML
+    private void handleSearch() {
+        String searchTerm = searchInputField.getText();
+        loadEvents(searchTerm, currentSelectedCategory);
+    }
+
+    // Metode untuk menangani klik pada label kategori
+    @FXML
+    private void handleCategoryClick(MouseEvent event) {
+        Label clickedLabel = (Label) event.getSource();
+
+        // Reset style label yang sebelumnya terpilih
+        if (lastSelectedCategoryLabel != null) {
+            lastSelectedCategoryLabel.setStyle("-fx-underline: false; -fx-font-weight: normal; -fx-text-fill: white;");
+        }
+
+        // Set style untuk label yang baru diklik
+        clickedLabel.setStyle("-fx-underline: true; -fx-font-weight: bold; -fx-text-fill: #b83d6e;");
+        lastSelectedCategoryLabel = clickedLabel; // Perbarui label yang terakhir terpilih
+
+        // Ambil teks kategori dari label yang diklik
+        currentSelectedCategory = clickedLabel.getText();
+        if (currentSelectedCategory.equalsIgnoreCase("All")) {
+            currentSelectedCategory = "Semua Kategori"; // Sesuaikan dengan nilai yang dikirim ke SupabaseService
+        }
+
+        handleSearch(); // Lakukan pencarian ulang dengan kategori baru
+    }
+
+    private VBox createEventCard(Event event) {
         VBox card = new VBox();
         card.setAlignment(javafx.geometry.Pos.TOP_CENTER);
-        // Sesuaikan ukuran kartu agar proporsional untuk TilePane
-        card.setPrefHeight(280.0); // Tinggi kartu yang disarankan
-        card.setPrefWidth(220.0); // Lebar kartu yang disarankan
+        card.setPrefHeight(280.0);
+        card.setPrefWidth(220.0);
         card.setStyle("-fx-background-color: #1A1C28; -fx-background-radius: 10;");
 
-        // ImageView untuk banner event
         ImageView imageView = new ImageView();
-        imageView.setFitHeight(120.0); // Tinggi gambar
-        imageView.setFitWidth(220.0); // Lebar gambar sesuai kartu
+        imageView.setFitHeight(120.0);
+        imageView.setFitWidth(220.0);
         imageView.setPreserveRatio(false);
         imageView.setStyle("-fx-background-radius: 10 10 0 0;");
 
-        String bannerUrl = event.optString("banner_url", ""); // Asumsi ada kolom 'banner_url' di database
-        if (!bannerUrl.isEmpty()) {
+        String bannerUrl = event.getBannerUrl();
+        if (bannerUrl != null && !bannerUrl.isEmpty()) {
             try {
-                // Catatan: Jika banner_url hanya nama file, Anda perlu membentuk URL lengkap ke Supabase Storage Bucket Anda.
-                // Contoh: String fullBannerUrl = "https://<your-project-id>.supabase.co/storage/v1/object/public/<nama_bucket_anda>/" + bannerUrl;
-                // imageView.setImage(new Image(fullBannerUrl));
-                imageView.setImage(new Image(bannerUrl)); // Asumsi bannerUrl sudah berupa URL lengkap
+                imageView.setImage(new Image(bannerUrl));
             } catch (Exception e) {
-                System.err.println("Gagal memuat gambar banner untuk event " + event.optString("judul") + ": " + e.getMessage());
+                System.err.println("Gagal memuat gambar banner untuk event " + event.getJudul() + ": " + e.getMessage());
                 imageView.setImage(new Image("https://placehold.co/220x120/B83D6E/ffffff?text=Event+Image"));
             }
         } else {
@@ -110,50 +172,27 @@ public class DashboardController {
         VBox detailsBox = new VBox();
         detailsBox.setSpacing(5.0);
         detailsBox.setPadding(new Insets(10.0, 10.0, 10.0, 10.0));
-        detailsBox.setAlignment(javafx.geometry.Pos.TOP_LEFT); // Menyelaraskan konten label ke kiri atas
+        detailsBox.setAlignment(javafx.geometry.Pos.TOP_LEFT);
 
-        // Date Label
-        Label dateLabel = new Label();
-        String tanggalMulai = event.optString("tanggal_mulai", "");
-        if (!tanggalMulai.isEmpty()) {
-            try {
-                LocalDate date = LocalDate.parse(tanggalMulai);
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM");
-                dateLabel.setText(date.format(formatter).toUpperCase());
-            } catch (Exception e) {
-                dateLabel.setText("Tanggal Tidak Valid");
-            }
-        } else {
-            dateLabel.setText("Tanggal Tidak Tersedia");
-        }
+        Label dateLabel = new Label(event.getFormattedTanggal());
         dateLabel.setTextFill(javafx.scene.paint.Color.WHITE);
         dateLabel.setFont(new Font("Segoe UI Bold", 14.0));
 
-        // Title Label
-        Label titleLabel = new Label(event.optString("judul", "Judul Event"));
+        Label titleLabel = new Label(event.getJudul());
         titleLabel.setTextFill(javafx.scene.paint.Color.WHITE);
         titleLabel.setWrapText(true);
         titleLabel.setFont(new Font("Segoe UI Bold", 14.0));
 
-        // Location Label
-        Label locationLabel = new Label(event.optString("tempat", "Tempat Event"));
+        Label locationLabel = new Label(event.getTempat());
         locationLabel.setTextFill(javafx.scene.paint.Color.web("#9e9e9e"));
         locationLabel.setWrapText(true);
         locationLabel.setFont(new Font("Segoe UI", 10.0));
 
-        // Time Label
-        Label timeLabel = new Label(event.optString("waktu_mulai", "") + " - " + event.optString("waktu_berakhir", ""));
+        Label timeLabel = new Label(event.getFormattedWaktu());
         timeLabel.setTextFill(javafx.scene.paint.Color.web("#9e9e9e"));
         timeLabel.setFont(new Font("Segoe UI", 10.0));
 
-        // Menggunakan data harga_tiket dari Supabase untuk label tiket
-        String ticketsInfo = "IDR XX Tickets Available";
-        if (event.has("harga_tiket")) {
-            ticketsInfo = "IDR " + String.format("%,.0f", event.optDouble("harga_tiket", 0.0)) + " Available";
-        } else if (event.has("stok_tiket")) { // Jika ada kolom stok tiket
-            ticketsInfo = event.optInt("stok_tiket", 0) + " Tickets Available";
-        }
-        Label ticketsLabel = new Label(ticketsInfo);
+        Label ticketsLabel = new Label("IDR XX Tickets Available");
         ticketsLabel.setTextFill(javafx.scene.paint.Color.web("#e91e63"));
         ticketsLabel.setFont(new Font("Segoe UI Bold", 10.0));
 
@@ -163,8 +202,7 @@ public class DashboardController {
         return card;
     }
 
-    // Metode ini membuka pop-up detail event ketika kartu diklik
-    private void showEventDetail(JSONObject event) {
+    private void showEventDetail(Event event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/sapatatix/FXML/EventDetailPopup.fxml"));
             Parent root = loader.load();
@@ -172,22 +210,21 @@ public class DashboardController {
             EventDetailController controller = loader.getController();
             Stage dialogStage = new Stage();
             dialogStage.setTitle("Detail Event");
-            dialogStage.initModality(Modality.APPLICATION_MODAL); // Memblokir jendela lain
-            dialogStage.initOwner(eventTilePane.getScene().getWindow()); // Mengatur pemilik ke jendela dashboard
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
+            dialogStage.initOwner(eventTilePane.getScene().getWindow());
 
             dialogStage.setScene(new Scene(root));
 
             controller.setDialogStage(dialogStage);
-            controller.setEventDetails(event); // Meneruskan data event ke controller pop-up
+            controller.setEventDetails(event);
 
-            dialogStage.showAndWait(); // Tampilkan pop-up dan tunggu hingga ditutup
+            dialogStage.showAndWait();
         } catch (IOException e) {
             e.printStackTrace();
             System.err.println("Gagal memuat pop-up detail event: " + e.getMessage());
         }
     }
 
-    // Metode navigasi lain
     @FXML
     public void handleGoToBuatEvent() {
         loadFXML("/com/example/sapatatix/FXML/BuatEventDeskripsi.fxml", "Buat Event");

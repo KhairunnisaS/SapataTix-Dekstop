@@ -139,7 +139,8 @@
                             </image>
                         </ImageView>
                         <Region HBox.hgrow="ALWAYS" />
-                        <TextField alignment="CENTER" promptText="Cari Event ..." style="-fx-background-color: FFFFFF; -fx-background-radius: 20; -fx-text-fill: #333333;">
+                        <TextField fx:id="searchInputField" alignment="CENTER" promptText="Cari Event ..." onAction="#handleSearch"
+                                   style="-fx-background-color: FFFFFF; -fx-background-radius: 20; -fx-text-fill: #333333;">
                             <prefWidth>282.0</prefWidth>
                             <prefHeight>40.0</prefHeight>
                             <padding>
@@ -157,22 +158,22 @@
                         <Insets left="20.0" right="20.0" />
                     </padding>
                     <children>
-                        <Label style="-fx-underline: true;" text="All" textFill="#b83d6e">
+                        <Label fx:id="allCategoryLabel" style="-fx-underline: true;" text="All" textFill="#b83d6e" onMouseClicked="#handleCategoryClick">
                             <font>
                                 <Font name="Segoe UI Bold" size="18.0" />
                             </font>
                         </Label>
-                        <Label text="Budaya" textFill="WHITE">
+                        <Label fx:id="budayaCategoryLabel" text="Budaya" textFill="WHITE" onMouseClicked="#handleCategoryClick">
                             <font>
                                 <Font name="Segoe UI" size="18.0" />
                             </font>
                         </Label>
-                        <Label text="Amal" textFill="WHITE">
+                        <Label fx:id="amalCategoryLabel" text="Amal" textFill="WHITE" onMouseClicked="#handleCategoryClick">
                             <font>
                                 <Font name="Segoe UI" size="18.0" />
                             </font>
                         </Label>
-                        <Label text="Parawisata" textFill="WHITE">
+                        <Label fx:id="pariwisataCategoryLabel" text="Parawisata" textFill="WHITE" onMouseClicked="#handleCategoryClick">
                             <font>
                                 <Font name="Segoe UI" size="18.0" />
                             </font>
