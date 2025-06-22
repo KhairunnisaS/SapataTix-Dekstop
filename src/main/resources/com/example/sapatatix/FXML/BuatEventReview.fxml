@@ -183,7 +183,6 @@
                                     </VBox.margin>
                                 </HBox>
 
-                                <!-- Preview Content Section -->
                                 <HBox alignment="TOP_CENTER" spacing="40.0">
                                     <children>
                                         <VBox alignment="TOP_CENTER" prefWidth="250.0" spacing="15.0">
@@ -199,6 +198,11 @@
                                                     </font>
                                                 </Label>
                                                 <Label fx:id="eventHostLabel" text="Nama Penyelenggara" textFill="#666666" wrapText="true">
+                                                    <font>
+                                                        <Font name="Segoe UI" size="14.0" />
+                                                    </font>
+                                                </Label>
+                                                <Label fx:id="eventHostPhoneLabel" text="No. HP Host: [Nomor]" textFill="#666666" wrapText="true">
                                                     <font>
                                                         <Font name="Segoe UI" size="14.0" />
                                                     </font>
@@ -221,13 +225,13 @@
                                                         <Font name="Segoe UI Bold" size="24.0" />
                                                     </font>
                                                 </Label>
+                                                <Label fx:id="eventCategoryLabel" text="Kategori: [Kategori Event]" textFill="#9e9e9e">
+                                                    <font>
+                                                        <Font name="Segoe UI" size="12.0" />
+                                                    </font>
+                                                </Label>
                                                 <HBox alignment="CENTER_LEFT" spacing="10.0">
                                                     <children>
-                                                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                                            <image>
-                                                                <Image url="https://placehold.co/20x20/333333/ffffff?text=📅" />
-                                                            </image>
-                                                        </ImageView>
                                                         <VBox>
                                                             <children>
                                                                 <Label fx:id="eventDateLabel" text="Hari, Tanggal" textFill="#666666">
@@ -246,11 +250,6 @@
                                                 </HBox>
                                                 <HBox alignment="CENTER_LEFT" spacing="10.0">
                                                     <children>
-                                                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                                            <image>
-                                                                <Image url="https://placehold.co/20x20/333333/ffffff?text=📍" />
-                                                            </image>
-                                                        </ImageView>
                                                         <Label fx:id="eventLocationLabel" text="Alamat" textFill="#666666">
                                                             <font>
                                                                 <Font name="Segoe UI" size="14.0" />
@@ -258,13 +257,19 @@
                                                         </Label>
                                                     </children>
                                                 </HBox>
+                                                <Label fx:id="eventSesiLabel" text="Sesi: [Sesi Event]" textFill="#666666">
+                                                    <font>
+                                                        <Font name="Segoe UI" size="14.0" />
+                                                    </font>
+                                                </Label>
+                                                <Label fx:id="eventTypeLabel" text="Tipe: [Jenis Event]" textFill="#666666">
+                                                    <font>
+                                                        <Font name="Segoe UI" size="14.0" />
+                                                    </font>
+                                                </Label>
+
                                                 <HBox alignment="CENTER_LEFT" spacing="10.0">
                                                     <children>
-                                                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                                            <image>
-                                                                <Image url="https://placehold.co/20x20/333333/ffffff?text=🎫" />
-                                                            </image>
-                                                        </ImageView>
                                                         <Label fx:id="labelJenisHargaTiket" text="Jenis Tiket : Harga per tiket" textFill="#666666">
                                                             <font>
                                                                 <Font name="Segoe UI" size="14.0" />
@@ -272,7 +277,7 @@
                                                         </Label>
                                                     </children>
                                                 </HBox>
-                                                <Label fx:id="eventDescriptionLabel" text="Deskripsi Event" textFill="#333333">
+                                                <Label text="Deskripsi Event" textFill="#333333">
                                                     <font>
                                                         <Font name="Segoe UI Bold" size="18.0" />
                                                     </font>
@@ -280,15 +285,19 @@
                                                         <Insets top="20.0" />
                                                     </VBox.margin>
                                                 </Label>
+                                                <Label fx:id="eventDescriptionLabel" text="Isi deskripsi lengkap event akan muncul di sini." textFill="#666666" wrapText="true">
+                                                    <font>
+                                                        <Font name="Segoe UI" size="14.0" />
+                                                    </font>
+                                                </Label>
                                             </children>
                                         </VBox>
                                     </children>
                                 </HBox>
 
-                                <!-- Buttons Section (Kembali and Unggah Event) -->
                                 <HBox alignment="CENTER_RIGHT" spacing="15.0">
                                     <children>
-                                        <Button style="-fx-background-color: #F5F5F5; -fx-background-radius: 8; -fx-text-fill: #333333;" text="Kembali">
+                                        <Button fx:id="backButton" onAction="#handleBack" style="-fx-background-color: #F5F5F5; -fx-background-radius: 8; -fx-text-fill: #333333;" text="Kembali">
                                             <padding>
                                                 <Insets bottom="15.0" left="30.0" right="30.0" top="15.0" />
                                             </padding>
@@ -296,7 +305,7 @@
                                                 <Font name="Segoe UI Bold" size="16.0" />
                                             </font>
                                         </Button>
-                                        <Button style="-fx-background-color: #B83D6E; -fx-background-radius: 8;" text="Unggah Event" textFill="WHITE">
+                                        <Button fx:id="unggahBtn" style="-fx-background-color: #B83D6E; -fx-background-radius: 8;" text="Unggah Event" textFill="WHITE">
                                             <padding>
                                                 <Insets bottom="15.0" left="30.0" right="30.0" top="15.0" />
                                             </padding>

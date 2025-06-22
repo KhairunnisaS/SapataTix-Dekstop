@@ -179,26 +179,75 @@ public class SupabaseService {
         client.newCall(request).enqueue(callback);
     }
 
-    // 🔹 UPLOAD BANNER
+    // 🔹 UPLOAD BANNER (MODIFIED to actually upload to Storage)
     public static void uploadBanner(String eventId, File imageFile, Callback callback) {
-        JSONObject json = new JSONObject();
-        json.put("banner_url", imageFile.getName());
+        String bucketName = "event-banner"; // GANTI: Pastikan nama bucket Anda di Supabase Storage
+        String fileNameInStorage = eventId + "_" + System.currentTimeMillis() + "_" + imageFile.getName(); // Nama unik
+        String contentType = "image/jpeg"; // Default, akan mencoba infer
 
-        RequestBody body = RequestBody.create(
-                json.toString(),
-                MediaType.parse("application/json")
-        );
+        try {
+            contentType = Files.probeContentType(imageFile.toPath());
+            if (contentType == null) {
+                String fileExtension = getFileExtension(imageFile.getName());
+                if (fileExtension.equalsIgnoreCase("png")) {
+                    contentType = "image/png";
+                } else if (fileExtension.equalsIgnoreCase("jpg") || fileExtension.equalsIgnoreCase("jpeg")) {
+                    contentType = "image/jpeg";
+                } else {
+                    contentType = "application/octet-stream";
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            contentType = "application/octet-stream";
+        }
 
-        Request request = new Request.Builder()
-                .url(PROJECT_URL + "/rest/v1/event?id=eq." + eventId)
-                .patch(body)
+        // Step 1: Upload the image file to Supabase Storage
+        RequestBody requestBody = RequestBody.create(imageFile, MediaType.parse(contentType));
+
+        Request uploadRequest = new Request.Builder()
+                .url(PROJECT_URL + "/storage/v1/object/" + bucketName + "/" + fileNameInStorage)
                 .addHeader("apikey", API_KEY)
                 .addHeader("Authorization", "Bearer " + API_KEY)
-                .addHeader("Content-Type", "application/json")
-                .addHeader("Prefer", "return=representation")
+                .addHeader("Content-Type", contentType)
+                .put(requestBody) // Gunakan PUT untuk mengunggah/menimpa objek
                 .build();
 
-        client.newCall(request).enqueue(callback);
+        client.newCall(uploadRequest).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                // Lanjutkan kegagalan ke callback asli
+                callback.onFailure(call, e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    // Step 2: Dapatkan URL publik dari gambar yang diunggah
+                    String publicImageUrl = PROJECT_URL + "/storage/v1/object/public/" + bucketName + "/" + fileNameInStorage;
+
+                    // Step 3: Perbarui tabel 'event' dengan URL gambar publik ini
+                    JSONObject updateJson = new JSONObject();
+                    updateJson.put("banner_url", publicImageUrl); // Simpan URL publik
+
+                    RequestBody updateBody = RequestBody.create(updateJson.toString(), JSON);
+
+                    Request updateEventRequest = new Request.Builder()
+                            .url(PROJECT_URL + "/rest/v1/event?id=eq." + eventId)
+                            .patch(updateBody)
+                            .addHeader("apikey", API_KEY)
+                            .addHeader("Authorization", "Bearer " + API_KEY)
+                            .addHeader("Content-Type", "application/json")
+                            .addHeader("Prefer", "return=representation")
+                            .build();
+
+                    client.newCall(updateEventRequest).enqueue(callback); // Lanjutkan sukses/gagal dari update event
+                } else {
+                    // Jika upload gambar ke storage gagal, lanjutkan respons kegagalan itu
+                    callback.onResponse(call, response);
+                }
+            }
+        });
     }
 
     // 🔹 UPLOAD TIKET
@@ -253,11 +302,11 @@ public class SupabaseService {
         client.newCall(request).enqueue(callback);
     }
 
-    // 🔹 GET EVENT BY ID (METODE BARU untuk mengambil detail event spesifik)
+    // 🔹 GET EVENT BY ID (untuk mengambil detail event spesifik)
     public static void getEventById(String eventId, Callback callback) {
         HttpUrl url = HttpUrl.parse(PROJECT_URL + "/rest/v1/event")
                 .newBuilder()
-                .addQueryParameter("id", "eq." + eventId) // Filter berdasarkan ID event
+                .addQueryParameter("id", "eq." + eventId)
                 .build();
 
         Request request = new Request.Builder()
