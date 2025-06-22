@@ -53,7 +53,7 @@ public class LoginController {
                     if (jsonArray.length() > 0) {
                         JSONObject user = jsonArray.getJSONObject(0);
 
-                        // ✅ Simpan userId ke session
+                        // Simpan userId ke session
                         SessionManager.userId = user.get("id").toString();
 
                         Platform.runLater(() -> {

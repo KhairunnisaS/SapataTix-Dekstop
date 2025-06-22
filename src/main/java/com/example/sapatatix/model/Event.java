@@ -5,22 +5,22 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-// Kelas abstrak karena tidak semua event adalah event dasar, melainkan jenis spesifik
 public abstract class Event {
-    protected String id; // ID dari database
+    // ENKAPSULASI: Atribut dideklarasikan sebagai protected, membatasi akses langsung
+    protected String id;
     protected String judul;
-    protected String kategori; // Contoh: "Budaya", "Pariwisata", "Amal"
+    protected String kategori;
     protected String tempat;
     protected String deskripsi;
     protected String namaHost;
     protected String noHpHost;
-    protected String sesi; // Pagi, Siang, Sore, Malam
+    protected String sesi;
     protected LocalDate tanggalMulai;
     protected LocalTime waktuMulai;
     protected LocalTime waktuBerakhir;
-    protected String jenisEvent; // "Event Satu Hari", "Event Berjalan"
+    protected String jenisEvent;
     protected String bannerUrl;
-    protected String userId; // ID pengguna yang membuat event
+    protected String userId;
 
     // Konstruktor dasar untuk semua jenis event
     public Event(String id, String judul, String kategori, String tempat, String deskripsi,
@@ -34,28 +34,32 @@ public abstract class Event {
         this.namaHost = namaHost;
         this.noHpHost = noHpHost;
         this.sesi = sesi;
-        this.tanggalMulai = LocalDate.parse(tanggalMulai); // Pastikan format tanggal sesuai ISO_LOCAL_DATE (YYYY-MM-DD)
-        this.waktuMulai = LocalTime.parse(waktuMulai);    // Pastikan format waktu sesuai ISO_LOCAL_TIME (HH:MM)
-        this.waktuBerakhir = LocalTime.parse(waktuBerakhir); // Pastikan format waktu sesuai ISO_LOCAL_TIME (HH:MM)
+        this.tanggalMulai = LocalDate.parse(tanggalMulai);
+        this.waktuMulai = LocalTime.parse(waktuMulai);
+        this.waktuBerakhir = LocalTime.parse(waktuBerakhir);
         this.jenisEvent = jenisEvent;
         this.bannerUrl = bannerUrl;
         this.userId = userId;
     }
 
-    // Metode abstrak yang harus diimplementasikan oleh setiap subclass event
+    // POLIMORFISME: Metode abstrak yang harus diimplementasikan oleh setiap subclass Event.
+    // Perilaku spesifik akan ditentukan oleh subclass (misal: CulturalEvent, TourismEvent, CharityEvent).
     public abstract String getJenisSpesifik(); // Misal: "Festival Tari", "Tur Kota"
     public abstract String getDetailTambahan(); // Misal: "Artis Tampil: X, Y", "Durasi: 3 jam"
 
-    // Metode umum untuk semua event
+    // ENKAPSULASI: Metode publik yang menyediakan representasi data yang diformat,
+    // menyembunyikan detail implementasi format tanggal/waktu.
     public String getFormattedTanggal() {
-        return tanggalMulai.format(DateTimeFormatter.ofPattern("EEEE, dd MMMM yyyy"));
+        return tanggalMulai.format(DateTimeFormatter.ofPattern("EEEE, dd MMMM[yyyy]"));
     }
 
+    // ENKAPSULASI: Metode publik yang menyediakan representasi data yang diformat.
     public String getFormattedWaktu() {
         return waktuMulai.format(DateTimeFormatter.ofPattern("HH:mm")) + " - " + waktuBerakhir.format(DateTimeFormatter.ofPattern("HH:mm"));
     }
 
-    // --- Getters untuk semua field umum ---
+    // ENKAPSULASI: Metode publik (getters) untuk mengakses nilai atribut protected.
+    // Ini adalah bagian dari antarmuka publik kelas, menyediakan kontrol akses ke data internal.
     public String getId() { return id; }
     public String getJudul() { return judul; }
     public String getKategori() { return kategori; }
@@ -71,41 +75,40 @@ public abstract class Event {
     public String getBannerUrl() { return bannerUrl; }
     public String getUserId() { return userId; }
 
-    // Metode utilitas untuk membuat objek Event dari JSONObject (Ini akan perlu diadaptasi)
+    // POLIMORFISME: Metode pabrik statis yang membuat objek subclass Event yang spesifik
+    // berdasarkan nilai 'kategori' dalam JSONObject. Ini adalah titik di mana polimorfisme
+    // runtime terjadi karena tipe objek yang dikembalikan bisa berbeda (CulturalEvent, TourismEvent, dll.)
+    // meskipun dikembalikan sebagai tipe Event.
     public static Event fromJson(JSONObject json) {
-        // Ini adalah tempat di mana polimorfisme akan diterapkan saat membuat objek event.
-        // Berdasarkan 'kategori' atau field lain, kita akan menginstansiasi subclass yang tepat.
         String kategori = json.optString("kategori", "");
         switch (kategori) {
             case "Budaya":
-                return new CulturalEvent(
+                return new CulturalEvent( // POLIMORFISME: Mengembalikan instance CulturalEvent
                         json.optString("id"), json.optString("judul"), json.optString("kategori"),
                         json.optString("tempat"), json.optString("deskripsi"), json.optString("nama_host"),
                         json.optString("no_hp_host"), json.optString("sesi"), json.optString("tanggal_mulai"),
                         json.optString("waktu_mulai"), json.optString("waktu_berakhir"), json.optString("jenis_event"),
                         json.optString("banner_url"), json.optString("user_id"),
-                        json.optString("artis_tampil", "N/A"), json.optString("genre_budaya", "N/A") // Atribut spesifik
+                        json.optString("artis_tampil", "N/A"), json.optString("genre_budaya", "N/A")
                 );
             case "Pariwisata":
-                return new TourismEvent(
+                return new TourismEvent( // POLIMORFISME: Mengembalikan instance TourismEvent
                         json.optString("id"), json.optString("judul"), json.optString("kategori"),
                         json.optString("tempat"), json.optString("deskripsi"), json.optString("nama_host"),
                         json.optString("no_hp_host"), json.optString("sesi"), json.optString("tanggal_mulai"),
                         json.optString("waktu_mulai"), json.optString("waktu_berakhir"), json.optString("jenis_event"),
                         json.optString("banner_url"), json.optString("user_id"),
-                        json.optString("durasi_tur", "N/A"), json.optString("fasilitas_termasuk", "N/A") // Atribut spesifik
+                        json.optString("durasi_tur", "N/A"), json.optString("fasilitas_termasuk", "N/A")
                 );
             // Tambahkan case untuk CharityEvent dan kategori lainnya
             default:
-                // Jika tidak ada subclass spesifik, kembalikan event dasar atau event default
-                // Atau lempar exception jika semua event harus bertipe spesifik
-                return new CulturalEvent( // Contoh fallback, Anda bisa buat kelas DefaultEvent jika perlu
+                return new CulturalEvent( // POLIMORFISME: Fallback, mengembalikan instance CulturalEvent
                         json.optString("id"), json.optString("judul"), json.optString("kategori"),
                         json.optString("tempat"), json.optString("deskripsi"), json.optString("nama_host"),
                         json.optString("no_hp_host"), json.optString("sesi"), json.optString("tanggal_mulai"),
                         json.optString("waktu_mulai"), json.optString("waktu_berakhir"), json.optString("jenis_event"),
                         json.optString("banner_url"), json.optString("user_id"),
-                        "N/A", "N/A" // Default values for specific attributes
+                        "N/A", "N/A"
                 );
         }
     }

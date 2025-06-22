@@ -52,8 +52,8 @@ public class BuatEventBannerController {
             // Tampilkan preview gambar dengan ukuran penuh
             Image image = new Image(selectedFile.toURI().toString());
             imagePreview.setImage(image);
-            imagePreview.setPreserveRatio(false); // agar isi kotak penuh
-            imagePreview.setFitWidth(950);        // sesuaikan dengan ukuran kotak di FXML
+            imagePreview.setPreserveRatio(false);
+            imagePreview.setFitWidth(950);
             imagePreview.setFitHeight(314);
         } else {
             filePathField.setText("Belum ada file dipilih");

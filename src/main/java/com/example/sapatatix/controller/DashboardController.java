@@ -1,7 +1,7 @@
 package com.example.sapatatix.controller;
 
 import com.example.sapatatix.service.SupabaseService;
-import com.example.sapatatix.model.Event; // Import kelas Event model
+import com.example.sapatatix.model.Event;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -23,7 +23,7 @@ import org.json.JSONObject;
 import javafx.geometry.Insets;
 import javafx.scene.text.Font;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.control.TextField; // Import TextField
+import javafx.scene.control.TextField;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -37,19 +37,17 @@ public class DashboardController {
     @FXML private TilePane eventTilePane;
 
     // FXML Elements for Search and Filter
-    @FXML private TextField searchInputField; // fx:id="searchInputField" di FXML
-    @FXML private Label allCategoryLabel;    // fx:id="allCategoryLabel" di FXML
-    @FXML private Label budayaCategoryLabel; // fx:id="budayaCategoryLabel" di FXML
-    @FXML private Label amalCategoryLabel;   // fx:id="amalCategoryLabel" di FXML
-    @FXML private Label pariwisataCategoryLabel; // fx:id="pariwisataCategoryLabel" di FXML
+    @FXML private TextField searchInputField;
+    @FXML private Label allCategoryLabel;
+    @FXML private Label budayaCategoryLabel;
+    @FXML private Label amalCategoryLabel;
+    @FXML private Label pariwisataCategoryLabel;
 
-    private String currentSelectedCategory = "All"; // Default kategori yang terpilih
-    private Label lastSelectedCategoryLabel; // Untuk menyimpan referensi label kategori yang terakhir dipilih
+    private String currentSelectedCategory = "All";
+    private Label lastSelectedCategoryLabel;
 
     @FXML
     public void initialize() {
-        // Inisialisasi style untuk kategori "All" sebagai yang terpilih saat awal
-        // Pastikan allCategoryLabel tidak null sebelum mengaksesnya
         if (allCategoryLabel != null) {
             allCategoryLabel.setStyle("-fx-underline: true; -fx-font-weight: bold; -fx-text-fill: #b83d6e;");
             lastSelectedCategoryLabel = allCategoryLabel;

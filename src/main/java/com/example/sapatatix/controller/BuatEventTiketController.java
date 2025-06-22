@@ -78,7 +78,7 @@ public class BuatEventTiketController {
         String harga = ticketPriceField.getText();
         String jumlah = totalTicketsField.getText();
 
-        String jenisEvent = selectedTicketType;// ambil dari vbox yang dipilih (berbayar/gratis)
+        String jenisEvent = selectedTicketType;
         String eventId = SessionManager.id;
 
         if (eventId == null) {

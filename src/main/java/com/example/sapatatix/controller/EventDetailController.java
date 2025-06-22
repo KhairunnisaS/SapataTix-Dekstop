@@ -2,8 +2,8 @@ package com.example.sapatatix.controller;
 
 import com.example.sapatatix.service.TransactionData;
 import com.example.sapatatix.service.SupabaseService;
-import com.example.sapatatix.model.Event; // Import kelas Event model
-import com.example.sapatatix.model.Ticket; // Import kelas Ticket model
+import com.example.sapatatix.model.Event;
+import com.example.sapatatix.model.Ticket;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -14,7 +14,7 @@ import javafx.scene.image.ImageView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.json.JSONArray;
-import org.json.JSONObject; // Tetap diperlukan untuk parsing awal dari Supabase
+import org.json.JSONObject;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
@@ -35,22 +35,20 @@ public class EventDetailController {
     @FXML private Label detailDeskripsiLabel;
     @FXML private Label detailHostLabel;
     @FXML private Label detailTicketInfoLabel;
-    @FXML private Label detailJenisSpesifikLabel; // Tambahkan ini jika Anda ingin menampilkan jenis spesifik event
-    @FXML private Label detailTambahanLabel;     // Tambahkan ini jika Anda ingin menampilkan detail tambahan event
+    @FXML private Label detailJenisSpesifikLabel;
+    @FXML private Label detailTambahanLabel;
 
     private Stage dialogStage;
-    private Event eventData; // Ganti JSONObject menjadi objek Event dari model
+    private Event eventData;
 
     public void setDialogStage(Stage dialogStage) {
         this.dialogStage = dialogStage;
     }
 
-    // Metode ini sekarang menerima objek Event dari model
     public void setEventDetails(Event event) {
         this.eventData = event;
         detailJudulHeaderLabel.setText(event.getJudul());
 
-        // Menggunakan getter dari objek Event untuk tanggal dan waktu
         detailTanggalLabel.setText(event.getFormattedTanggal());
         detailWaktuLabel.setText(event.getFormattedWaktu());
 
@@ -92,7 +90,7 @@ public class EventDetailController {
 
     @FXML
     private void handleBuyTicket() {
-        String eventId = eventData.getId(); // Menggunakan ID dari objek Event
+        String eventId = eventData.getId();
 
         if (eventId == null || eventId.isEmpty()) {
             Platform.runLater(() -> {
@@ -120,17 +118,14 @@ public class EventDetailController {
 
                         Platform.runLater(() -> {
                             try {
-                                // Konversi JSONObject menjadi objek Ticket dari model
                                 Ticket ticketObject = Ticket.fromJson(ticketJson);
 
-                                // Buat objek TransactionData baru dan teruskan objek Event dan Ticket
-                                TransactionData newTransaction = new TransactionData(eventData); // Menggunakan eventData (objek Event)
-                                newTransaction.setTicketObject(ticketObject); // Set objek Ticket
+                                TransactionData newTransaction = new TransactionData(eventData);
+                                newTransaction.setTicketObject(ticketObject);
 
-                                // Data tambahan yang sebelumnya disimpan di TransactionData bisa diambil dari ticketObject
-                                newTransaction.setTicketId(ticketObject.getId()); // ID dari objek Ticket
-                                newTransaction.setTicketType(ticketObject.getNamaTiket()); // Nama tiket dari objek Ticket
-                                newTransaction.setTicketPrice(ticketObject.calculatePrice()); // Harga tiket dari metode polimorfik
+                                newTransaction.setTicketId(ticketObject.getId());
+                                newTransaction.setTicketType(ticketObject.getNamaTiket());
+                                newTransaction.setTicketPrice(ticketObject.calculatePrice());
 
                                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/sapatatix/FXML/TicketSelectionPopup.fxml"));
                                 Parent root = loader.load();

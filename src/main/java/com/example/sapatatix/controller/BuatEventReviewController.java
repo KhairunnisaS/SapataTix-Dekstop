@@ -1,5 +1,6 @@
 package com.example.sapatatix.controller;
 
+import com.example.sapatatix.Main;
 import com.example.sapatatix.service.SupabaseService;
 import com.example.sapatatix.session.SessionManager;
 import com.example.sapatatix.model.Event;
@@ -44,9 +45,10 @@ public class BuatEventReviewController {
     // FXML Elements for Ticket Details - Disesuaikan dengan fx:id di FXML
     @FXML private Label labelJenisHargaTiket;
 
-    // FXML Elements for Buttons
+    // FXML Elements for Buttons - Disesuaikan dengan fx:id di FXML
     @FXML private Button backButton;
-    @FXML private Button uploadEventButton; // Nama lama 'unggahBtn' di FXML, ganti jadi 'uploadEventButton' di sini dan di FXML
+    @FXML private Button unggahBtn; // Menggunakan 'unggahBtn' agar sesuai dengan FXML yang Anda berikan
+
 
     private Event currentEvent;
     private Ticket currentTicket;
@@ -61,7 +63,7 @@ public class BuatEventReviewController {
 
         // Atur aksi untuk tombol
         if (backButton != null) backButton.setOnAction(e -> handleBack());
-        if (uploadEventButton != null) uploadEventButton.setOnAction(e -> handleUnggahEvent());
+        if (unggahBtn != null) unggahBtn.setOnAction(e -> handleUnggahEvent());
 
         loadEventDetails(eventId);
         loadTicketDetails(eventId);
@@ -86,21 +88,22 @@ public class BuatEventReviewController {
 
                     Platform.runLater(() -> {
                         eventNameLabel.setText(currentEvent.getJudul());
-                        eventCategoryLabel.setText("Kategori: " + currentEvent.getKategori()); // Isi label kategori
+                        eventCategoryLabel.setText("Kategori: " + currentEvent.getKategori());
                         eventLocationLabel.setText(currentEvent.getTempat());
                         eventDateLabel.setText(currentEvent.getFormattedTanggal());
                         eventTimeLabel.setText(currentEvent.getFormattedWaktu());
                         eventHostLabel.setText(currentEvent.getNamaHost());
-                        eventHostPhoneLabel.setText("No. HP Host: " + currentEvent.getNoHpHost()); // Isi label nomor HP host
-                        eventSesiLabel.setText("Sesi: " + currentEvent.getSesi());           // Isi label sesi
-                        eventTypeLabel.setText("Tipe: " + currentEvent.getJenisEvent());     // Isi label jenis event
+                        eventHostPhoneLabel.setText("No. HP Host: " + currentEvent.getNoHpHost());
+                        eventSesiLabel.setText("Sesi: " + currentEvent.getSesi());
+                        eventTypeLabel.setText("Tipe: " + currentEvent.getJenisEvent());
                         eventDescriptionLabel.setText(currentEvent.getDeskripsi());
 
                         // Load banner image
                         String bannerUrl = currentEvent.getBannerUrl();
                         if (bannerUrl != null && !bannerUrl.isEmpty()) {
                             try {
-                                String fullBannerUrl = "https://mcqhhdeqkuklvxglpycb.supabase.co/storage/v1/object/public/event-banner/" + bannerUrl;
+                                // HANYA gunakan bannerUrl langsung karena SupabaseService sudah menyimpannya sebagai URL lengkap
+                                String fullBannerUrl = bannerUrl; // <-- Perbaikan ada di baris ini
                                 eventImageView.setImage(new Image(fullBannerUrl));
                             } catch (Exception e) {
                                 System.err.println("Gagal memuat banner event: " + e.getMessage());
@@ -174,11 +177,10 @@ public class BuatEventReviewController {
 
     @FXML
     private void handleUnggahEvent() {
-        // Logika untuk menyelesaikan/mempublikasikan event dan kembali ke Dashboard
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/sapatatix/FXML/Dashboard.fxml"));
             Parent root = loader.load();
-            Stage stage = (Stage) uploadEventButton.getScene().getWindow();
+            Stage stage = (Stage) unggahBtn.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("Dashboard");
             stage.show();
