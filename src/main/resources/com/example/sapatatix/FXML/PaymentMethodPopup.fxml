@@ -63,7 +63,7 @@
                     <graphic>
                         <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                             <image>
-                                <Image url="@../Gambar/dana_icon.png" />
+                                <Image url="@../Gambar/dana.png" />
                             </image>
                         </ImageView>
                     </graphic>
@@ -81,7 +81,7 @@
                     <graphic>
                         <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                             <image>
-                                <Image url="@../Gambar/gopay_icon.png" />
+                                <Image url="@../Gambar/gopay.png" />
                             </image>
                         </ImageView>
                     </graphic>
