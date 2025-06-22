@@ -6,8 +6,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.File;
-import java.nio.file.Files;
-import okhttp3.Callback;
+import java.nio.file.Files; // Diperlukan untuk Files.probeContentType
+import okhttp3.Callback; // Pastikan ini adalah okhttp3.Callback
 
 public class SupabaseService {
     // GANTI: Sesuaikan dengan URL project Supabase kamu
@@ -18,41 +18,6 @@ public class SupabaseService {
     private static final OkHttpClient client = new OkHttpClient();
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
-    // Existing methods (register, login, createProfile, getProfile, updateProfile, etc.)
-
-    // 🔹 GET ALL EVENTS (MODIFIED to support search and filter)
-    // Parameter searchTerm dan category bersifat opsional (bisa null atau string kosong)
-    public static void getEvents(String searchTerm, String category, Callback callback) {
-        HttpUrl.Builder urlBuilder = HttpUrl.parse(PROJECT_URL + "/rest/v1/event")
-                .newBuilder();
-
-        if (searchTerm != null && !searchTerm.trim().isEmpty()) {
-            // Contoh: Mencari berdasarkan judul ATAU deskripsi menggunakan operator 'or'
-            // Pastikan Anda memiliki kebijakan RLS yang mengizinkan pencarian di kolom ini.
-            urlBuilder.addQueryParameter("or", "(judul.ilike.*" + searchTerm + "*,deskripsi.ilike.*" + searchTerm + "*)");
-        }
-
-        // 'All' atau 'Semua Kategori' adalah nilai default, tidak perlu dikirim sebagai filter
-        if (category != null && !category.trim().isEmpty() && !category.equalsIgnoreCase("All") && !category.equalsIgnoreCase("Semua Kategori")) {
-            // Filter berdasarkan kategori
-            urlBuilder.addQueryParameter("kategori", "eq." + category);
-        }
-
-        HttpUrl url = urlBuilder.build();
-
-        Request request = new Request.Builder()
-                .url(url)
-                .addHeader("apikey", API_KEY)
-                .addHeader("Authorization", "Bearer " + API_KEY)
-                .addHeader("Accept", "application/json")
-                .get()
-                .build();
-
-        client.newCall(request).enqueue(callback);
-    }
-
-    // Existing methods (saveTicketPurchase, uploadProfileImage, getUserData, etc.)
-    // ... (Pastikan semua metode lain yang sudah ada tetap di sini)
     // 🔹 REGISTER USER (dengan fullname)
     public static void register(String fullname, String email, String password, Callback callback) {
         String json = "{"
@@ -173,11 +138,14 @@ public class SupabaseService {
         json.put("waktu_berakhir", waktuBerakhir);
         json.put("jenis_event", jenisEvent);
 
+        // Pastikan userId di sini juga dikirim dengan benar, sesuaikan tipe data dengan kolom 'user_id' di tabel 'event'
         if (userId != null && !userId.isEmpty()) {
             try {
+                // Asumsi user_id di tabel event adalah INT. Jika UUID, jangan pakai parseInt.
                 json.put("user_id", Integer.parseInt(userId));
             } catch (NumberFormatException e) {
                 System.err.println("❗ userId tidak bisa di-parse ke INT: " + userId + ". Error: " + e.getMessage());
+                // Handle error, mungkin tampilkan alert ke pengguna
             }
         } else {
             System.out.println("❗ userId kosong atau null!");
@@ -203,7 +171,7 @@ public class SupabaseService {
     public static void insertEvent(JSONObject data, Callback callback) {
         RequestBody body = RequestBody.create(data.toString(), MediaType.get("application/json"));
         Request request = new Request.Builder()
-                .url(PROJECT_URL + "/events")
+                .url(PROJECT_URL + "/events") // Pastikan endpoint ini benar jika berbeda dari /rest/v1/event
                 .addHeader("apikey", API_KEY)
                 .addHeader("Authorization", "Bearer " + API_KEY)
                 .post(body)
@@ -212,9 +180,11 @@ public class SupabaseService {
         client.newCall(request).enqueue(callback);
     }
 
-    // 🔹 UPLOAD BANNER
+    // 🔹 UPLOAD BANNER (PATCH event table to add banner_url)
     public static void uploadBanner(String eventId, File imageFile, Callback callback) {
         JSONObject json = new JSONObject();
+        // Asumsi 'banner_url' akan menyimpan nama file atau URL setelah diunggah ke Storage
+        // Jika Anda mengunggah ke Storage dan ingin menyimpan URL publik, Anda perlu melakukan itu secara terpisah
         json.put("banner_url", imageFile.getName());
 
         RequestBody body = RequestBody.create(
@@ -234,27 +204,45 @@ public class SupabaseService {
         client.newCall(request).enqueue(callback);
     }
 
-    // 🔹 UPLOAD TIKET
+    // 🔹 UPLOAD TIKET (Insert into 'tiket' table)
     public static void uploadTiket(String eventId, String jenisEvent, String namaTiket, String harga, String jumlah, Callback callback) {
 
         System.out.println("Mengirim data tiket ke Supabase: " );
 
         JSONObject json = new JSONObject();
+        // Pastikan event_id sesuai dengan tipe data di tabel 'tiket' Anda
         json.put("event_id", Integer.parseInt(eventId));
         json.put("jenis_event", jenisEvent);
         json.put("nama_tiket", namaTiket);
-        json.put("harga", Integer.parseInt(harga));
-        json.put("jumlah", Integer.parseInt(jumlah));
+        json.put("harga", Integer.parseInt(harga)); // Pastikan harga adalah angka
+        json.put("jumlah", Integer.parseInt(jumlah)); // Pastikan jumlah adalah angka
 
         RequestBody body = RequestBody.create(json.toString(), MediaType.get("application/json"));
 
         Request request = new Request.Builder()
-                .url(PROJECT_URL + "/rest/v1/tiket")
+                .url(PROJECT_URL + "/rest/v1/tiket") // Pastikan endpoint ini sesuai dengan nama tabel tiket Anda
                 .post(body)
                 .addHeader("apikey", API_KEY)
                 .addHeader("Authorization", "Bearer " + API_KEY)
                 .addHeader("Content-Type", "application/json")
                 .addHeader("Prefer", "return=representation")
+                .build();
+
+        client.newCall(request).enqueue(callback);
+    }
+
+    // 🔹 GET ALL EVENTS
+    public static void getEvents(Callback callback) {
+        HttpUrl url = HttpUrl.parse(PROJECT_URL + "/rest/v1/event")
+                .newBuilder()
+                .build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", "Bearer " + API_KEY)
+                .addHeader("Accept", "application/json")
+                .get()
                 .build();
 
         client.newCall(request).enqueue(callback);
@@ -304,7 +292,7 @@ public class SupabaseService {
         RequestBody body = RequestBody.create(json.toString(), JSON);
 
         Request request = new Request.Builder()
-                .url(PROJECT_URL + "/rest/v1/transactions")
+                .url(PROJECT_URL + "/rest/v1/transactions") // Pastikan ini sesuai dengan nama tabel transaksi Anda
                 .addHeader("apikey", API_KEY)
                 .addHeader("Authorization", "Bearer " + API_KEY)
                 .addHeader("Content-Type", "application/json")
@@ -317,9 +305,10 @@ public class SupabaseService {
 
     // 🔹 UPLOAD PROFILE IMAGE TO SUPABASE STORAGE AND UPDATE PROFILE TABLE
     public static void uploadProfileImage(String userId, File imageFile, Callback callback) {
+        // Pastikan nama bucket di sini sama persis dengan yang Anda buat di Supabase Storage
         String bucketName = "profile-pictures";
         String fileNameInStorage = userId + "_" + System.currentTimeMillis() + "_" + imageFile.getName();
-        String contentType = "image/jpeg";
+        String contentType = "image/jpeg"; // Default, akan mencoba infer
 
         try {
             contentType = Files.probeContentType(imageFile.toPath());
@@ -338,6 +327,7 @@ public class SupabaseService {
             contentType = "application/octet-stream";
         }
 
+        // Step 1: Upload the image file to Supabase Storage
         RequestBody requestBody = RequestBody.create(imageFile, MediaType.parse(contentType));
 
         Request uploadRequest = new Request.Builder()
@@ -351,15 +341,18 @@ public class SupabaseService {
         client.newCall(uploadRequest).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                callback.onFailure(call, e);
+                callback.onFailure(call, e); // Lanjutkan kegagalan ke callback asli
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
+                    // Step 2: Dapatkan URL publik dari gambar yang diunggah
                     String publicImageUrl = PROJECT_URL + "/storage/v1/object/public/" + bucketName + "/" + fileNameInStorage;
 
+                    // Step 3: Perbarui tabel profil pengguna dengan URL gambar baru
                     JSONObject updateJson = new JSONObject();
+                    // Pastikan nama kolom di tabel 'profile' Anda adalah 'profile_picture_url'
                     updateJson.put("profile_picture_url", publicImageUrl);
 
                     RequestBody updateBody = RequestBody.create(updateJson.toString(), JSON);
@@ -373,14 +366,15 @@ public class SupabaseService {
                             .addHeader("Prefer", "return=representation")
                             .build();
 
-                    client.newCall(updateProfileRequest).enqueue(callback);
+                    client.newCall(updateProfileRequest).enqueue(callback); // Lanjutkan sukses/gagal dari update profil
                 } else {
-                    callback.onResponse(call, response);
+                    callback.onResponse(call, response); // Lanjutkan respons (misal, kode error dari storage)
                 }
             }
         });
     }
 
+    // Helper untuk mendapatkan ekstensi file
     private static String getFileExtension(String fileName) {
         int dotIndex = fileName.lastIndexOf('.');
         if (dotIndex > 0 && dotIndex < fileName.length() - 1) {
@@ -391,9 +385,13 @@ public class SupabaseService {
 
     // 🔹 GET USER DATA (fullname and email) dari tabel 'user'
     public static void getUserData(String userId, Callback callback) {
+        // GANTI: Pastikan nama tabel di sini adalah yang Anda gunakan untuk registrasi/login
+        // Misalnya, jika Anda menggunakan tabel 'users' untuk data registrasi, ganti '/rest/v1/user' menjadi '/rest/v1/users'
         HttpUrl url = HttpUrl.parse(PROJECT_URL + "/rest/v1/user")
                 .newBuilder()
+                // Asumsi kolom ID di tabel 'user' adalah 'id'
                 .addQueryParameter("id", "eq." + userId)
+                // Pilih kolom 'fullname' dan 'email'. Sesuaikan jika nama kolom berbeda di tabel 'user' Anda
                 .addQueryParameter("select", "fullname,email")
                 .build();
 
