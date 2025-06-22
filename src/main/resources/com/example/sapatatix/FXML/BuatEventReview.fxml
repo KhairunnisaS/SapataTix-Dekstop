@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="720.0" prefWidth="1280.0" style="-fx-background-color: #0F1017;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sapatatix.BerandaFix">
+<AnchorPane prefHeight="720.0" prefWidth="1280.0" style="-fx-background-color: #0F1017;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sapatatix.controller.BuatEventReviewController">
     <children>
         <ImageView fitHeight="720.0" fitWidth="1280.0" pickOnBounds="true" preserveRatio="true">
             <image>
@@ -46,21 +46,21 @@
 
                 <VBox prefWidth="250.0">
                     <children>
-                  <Button alignment="CENTER_LEFT" layoutX="10.0" layoutY="101.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="250.0" style="-fx-background-color: transparent; -fx-background-radius: 0;" text="Events" textFill="WHITE">
-                     <graphic>
-                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="https://placehold.co/20x20/cccccc/333333?text=H" />
-                           </image>
-                        </ImageView>
-                     </graphic>
-                     <padding>
-                        <Insets left="20.0" />
-                     </padding>
-                     <font>
-                        <Font name="Segoe UI" size="14.0" />
-                     </font>
-                  </Button>
+                        <Button alignment="CENTER_LEFT" layoutX="10.0" layoutY="101.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="250.0" style="-fx-background-color: transparent; -fx-background-radius: 0;" text="Events" textFill="WHITE">
+                            <graphic>
+                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="https://placehold.co/20x20/cccccc/333333?text=H" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                            <padding>
+                                <Insets left="20.0" />
+                            </padding>
+                            <font>
+                                <Font name="Segoe UI" size="14.0" />
+                            </font>
+                        </Button>
 
                         <Button fx:id="createEventNavBtn" alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="250.0" style="-fx-background-color: #B83D6E; -fx-background-radius: 0;" text="Buat Event" textFill="WHITE">
                             <graphic>
@@ -110,17 +110,17 @@
                     </children>
                 </VBox>
                 <Region VBox.vgrow="ALWAYS" />
-            <Button fx:id="loginBtn" prefHeight="50.0" prefWidth="97.0" style="-fx-background-color: #c00c0c; -fx-background-radius: 8;" text="Keluar" textFill="WHITE">
-               <padding>
-                  <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />
-               </padding>
-               <font>
-                  <Font name="Segoe UI Bold" size="16.0" />
-               </font>
-               <VBox.margin>
-                  <Insets bottom="30.0" />
-               </VBox.margin>
-            </Button>
+                <Button fx:id="loginBtn" prefHeight="50.0" prefWidth="97.0" style="-fx-background-color: #c00c0c; -fx-background-radius: 8;" text="Keluar" textFill="WHITE">
+                    <padding>
+                        <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />
+                    </padding>
+                    <font>
+                        <Font name="Segoe UI Bold" size="16.0" />
+                    </font>
+                    <VBox.margin>
+                        <Insets bottom="30.0" />
+                    </VBox.margin>
+                </Button>
             </children>
         </VBox>
 
@@ -131,11 +131,11 @@
                         <Insets left="20.0" right="20.0" />
                     </padding>
                     <children>
-                  <ImageView fitHeight="40.0" fitWidth="175.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../Gambar/Logo.png" />
-                     </image>
-                  </ImageView>
+                        <ImageView fitHeight="40.0" fitWidth="175.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../Gambar/Logo.png" />
+                            </image>
+                        </ImageView>
                     </children>
                 </HBox>
 
@@ -157,7 +157,7 @@
 
                                 <HBox alignment="CENTER" spacing="50.0">
                                     <children>
-                                        <Label text="Deskripsi" textFill="#333333">
+                                        <Label text="Edit" textFill="#333333">
                                             <font>
                                                 <Font name="Segoe UI Bold" size="16.0" />
                                             </font>
@@ -188,7 +188,7 @@
                                     <children>
                                         <VBox alignment="TOP_CENTER" prefWidth="250.0" spacing="15.0">
                                             <children>
-                                                <ImageView fitHeight="333.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true">
+                                                <ImageView fx:id="eventImageView" fitHeight="333.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true">
                                                     <image>
                                                         <Image url="https://placehold.co/250x150/B83D6E/ffffff?text=Image+Event" />
                                                     </image>
@@ -198,7 +198,7 @@
                                                         <Font name="Segoe UI Bold" size="18.0" />
                                                     </font>
                                                 </Label>
-                                                <Label text="Nama Penyelenggara" textFill="#666666" wrapText="true">
+                                                <Label fx:id="eventHostLabel" text="Nama Penyelenggara" textFill="#666666" wrapText="true">
                                                     <font>
                                                         <Font name="Segoe UI" size="14.0" />
                                                     </font>
@@ -216,7 +216,7 @@
 
                                         <VBox prefHeight="543.0" prefWidth="661.0" spacing="10.0" HBox.hgrow="ALWAYS">
                                             <children>
-                                                <Label text="Nama Event" textFill="#333333">
+                                                <Label fx:id="eventNameLabel" text="Nama Event" textFill="#333333">
                                                     <font>
                                                         <Font name="Segoe UI Bold" size="24.0" />
                                                     </font>
@@ -230,12 +230,12 @@
                                                         </ImageView>
                                                         <VBox>
                                                             <children>
-                                                                <Label text="Hari, Tanggal" textFill="#666666">
+                                                                <Label fx:id="eventDateLabel" text="Hari, Tanggal" textFill="#666666">
                                                                     <font>
                                                                         <Font name="Segoe UI" size="14.0" />
                                                                     </font>
                                                                 </Label>
-                                                                <Label text="Waktu" textFill="#666666">
+                                                                <Label fx:id="eventTimeLabel" text="Waktu" textFill="#666666">
                                                                     <font>
                                                                         <Font name="Segoe UI" size="14.0" />
                                                                     </font>
@@ -251,7 +251,7 @@
                                                                 <Image url="https://placehold.co/20x20/333333/ffffff?text=📍" />
                                                             </image>
                                                         </ImageView>
-                                                        <Label text="Alamat" textFill="#666666">
+                                                        <Label fx:id="eventLocationLabel" text="Alamat" textFill="#666666">
                                                             <font>
                                                                 <Font name="Segoe UI" size="14.0" />
                                                             </font>
@@ -265,25 +265,20 @@
                                                                 <Image url="https://placehold.co/20x20/333333/ffffff?text=🎫" />
                                                             </image>
                                                         </ImageView>
-                                                        <Label text="Jenis Tiket : Harga per tiket" textFill="#666666">
+                                                        <Label fx:id="labelJenisHargaTiket" text="Jenis Tiket : Harga per tiket" textFill="#666666">
                                                             <font>
                                                                 <Font name="Segoe UI" size="14.0" />
                                                             </font>
                                                         </Label>
                                                     </children>
                                                 </HBox>
-                                                <Label text="Deskripsi Event" textFill="#333333">
+                                                <Label fx:id="eventDescriptionLabel" text="Deskripsi Event" textFill="#333333">
                                                     <font>
                                                         <Font name="Segoe UI Bold" size="18.0" />
                                                     </font>
                                                     <VBox.margin>
                                                         <Insets top="20.0" />
                                                     </VBox.margin>
-                                                </Label>
-                                                <Label text="Lorem ipsum dolor sit amet consectetur . Eget vulputate sociis sit urna sit aliquet . Vivamus facilisis diam libero dolor volutpat diam eu . Quis a id posuere etiam at enim vivamus . Urna nisi malesuada libero enim ornare in viverra . Nibh commodo quis tellus aliquet nibh tristique lobortis id . Consequat ultricies vulputate turpis neque viverra tempor nunc . Et amet massa tellus consequat mauris imperdiet tellus . Praesent risus magna nisl turpis egestas ultrices viverra pellentesque blandit" textFill="#666666" wrapText="true">
-                                                    <font>
-                                                        <Font name="Segoe UI" size="12.0" />
-                                                    </font>
                                                 </Label>
                                             </children>
                                         </VBox>

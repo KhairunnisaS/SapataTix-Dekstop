@@ -3,17 +3,12 @@ package com.example.sapatatix.service;
 import okhttp3.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.io.IOException;
 import java.io.File;
-import java.nio.file.Files; // Diperlukan untuk Files.probeContentType
-import okhttp3.Callback; // Pastikan ini adalah okhttp3.Callback
 
 public class SupabaseService {
-    // GANTI: Sesuaikan dengan URL project Supabase kamu
-    private static final String PROJECT_URL = "https://mcqhhdeqkuklvxglpycb.supabase.co";
-    // GANTI: Public API Key dari Project Settings > API
-    private static final String API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1jcWhoZGVxa3VrbHZ4Z2xweWNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA0NDM3NjUsImV4cCI6MjA2NjAxOTc2NX0.BpXkt9b6FXT6lfhShUX8f2BCL7_M_iqwYsiWsEe9nf8";
+    private static final String PROJECT_URL = "https://mcqhhdeqkuklvxglpycb.supabase.co"; // GANTI: Sesuaikan dengan URL project Supabase kamu
+    private static final String API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1jcWhoZGVxa3VrbHZ4Z2xweWNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA0NDM3NjUsImV4cCI6MjA2NjAxOTc2NX0.BpXkt9b6FXT6lfhShUX8f2BCL7_M_iqwYsiWsEe9nf8"; // GANTI: Public API Key dari Project Settings > API
 
     private static final OkHttpClient client = new OkHttpClient();
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
@@ -27,7 +22,7 @@ public class SupabaseService {
                 + "}";
 
         Request request = new Request.Builder()
-                .url(PROJECT_URL + "/rest/v1/user")
+                .url(PROJECT_URL + "/rest/v1/user") // endpoint Supabase REST
                 .addHeader("apikey", API_KEY)
                 .addHeader("Authorization", "Bearer " + API_KEY)
                 .addHeader("Content-Type", "application/json")
@@ -56,68 +51,6 @@ public class SupabaseService {
         client.newCall(request).enqueue(callback);
     }
 
-    // 🔹 SIMPAN DATA PROFIL
-    public static void createProfile(String userId, String namaDepan, String namaBelakang, String telepon, String alamat, String kota, Callback callback) {
-        String json = "{"
-                + "\"user_id\":\"" + userId + "\","
-                + "\"nama_depan\":\"" + namaDepan + "\","
-                + "\"nama_belakang\":\"" + namaBelakang + "\","
-                + "\"telepon\":\"" + telepon + "\","
-                + "\"alamat\":\"" + alamat + "\","
-                + "\"kota\":\"" + kota + "\""
-                + "}";
-
-        Request request = new Request.Builder()
-                .url(PROJECT_URL + "/rest/v1/profile")
-                .addHeader("apikey", API_KEY)
-                .addHeader("Authorization", "Bearer " + API_KEY)
-                .addHeader("Content-Type", "application/json")
-                .post(RequestBody.create(json, JSON))
-                .build();
-
-        client.newCall(request).enqueue(callback);
-    }
-
-    // 🔹 AMBIL DATA PROFIL BERDASARKAN USER_ID
-    public static void getProfile(String userId, Callback callback) {
-        HttpUrl url = HttpUrl.parse(PROJECT_URL + "/rest/v1/profile")
-                .newBuilder()
-                .addQueryParameter("user_id", "eq." + userId)
-                .build();
-
-        Request request = new Request.Builder()
-                .url(url)
-                .addHeader("apikey", API_KEY)
-                .addHeader("Authorization", "Bearer " + API_KEY)
-                .addHeader("Accept", "application/json")
-                .get()
-                .build();
-
-        client.newCall(request).enqueue(callback);
-    }
-
-    // 🔹 UPDATE DATA PROFIL
-    public static void updateProfile(String userId, String namaDepan, String namaBelakang, String telepon, String alamat, String kota, Callback callback) {
-        String json = "{"
-                + "\"nama_depan\":\"" + namaDepan + "\","
-                + "\"nama_belakang\":\"" + namaBelakang + "\","
-                + "\"telepon\":\"" + telepon + "\","
-                + "\"alamat\":\"" + alamat + "\","
-                + "\"kota\":\"" + kota + "\""
-                + "}";
-
-        Request request = new Request.Builder()
-                .url(PROJECT_URL + "/rest/v1/profile?user_id=eq." + userId)
-                .addHeader("apikey", API_KEY)
-                .addHeader("Authorization", "Bearer " + API_KEY)
-                .addHeader("Content-Type", "application/json")
-                .method("PATCH", RequestBody.create(json, JSON))
-                .build();
-
-        client.newCall(request).enqueue(callback);
-    }
-
-    // 🔹 BUAT EVENT
     public static void buatEvent(String judul, String kategori, String tempat, String deskripsi,
                                  String host, String noHp, String sesi, String tanggal,
                                  String waktuMulai, String waktuBerakhir, String jenisEvent, String userId,
@@ -138,15 +71,9 @@ public class SupabaseService {
         json.put("waktu_berakhir", waktuBerakhir);
         json.put("jenis_event", jenisEvent);
 
-        // Pastikan userId di sini juga dikirim dengan benar, sesuaikan tipe data dengan kolom 'user_id' di tabel 'event'
+        // Pastikan userId adalah integer, bukan string kosong
         if (userId != null && !userId.isEmpty()) {
-            try {
-                // Asumsi user_id di tabel event adalah INT. Jika UUID, jangan pakai parseInt.
-                json.put("user_id", Integer.parseInt(userId));
-            } catch (NumberFormatException e) {
-                System.err.println("❗ userId tidak bisa di-parse ke INT: " + userId + ". Error: " + e.getMessage());
-                // Handle error, mungkin tampilkan alert ke pengguna
-            }
+            json.put("user_id", Integer.parseInt(userId));
         } else {
             System.out.println("❗ userId kosong atau null!");
         }
@@ -158,8 +85,8 @@ public class SupabaseService {
                 .addHeader("apikey", API_KEY)
                 .addHeader("Authorization", "Bearer " + API_KEY)
                 .addHeader("Content-Type", "application/json")
-                .addHeader("Prefer", "return=representation")
-                .post(body)
+                .addHeader("Prefer", "return=representation") // HARUS ADA supaya respons JSON-nya termasuk 'id'
+                .post(body) // ⬅⬅⬅ INI yang kurang di kodingan kamu sebelumnya
                 .build();
 
         client.newCall(request).enqueue(callback);
@@ -167,11 +94,10 @@ public class SupabaseService {
         System.out.println("SELESAI kirim ke Supabase (asynchronous)");
     }
 
-    // Metode insertEvent ini sepertinya duplikat atau tidak digunakan, pertimbangkan untuk menghapusnya
     public static void insertEvent(JSONObject data, Callback callback) {
         RequestBody body = RequestBody.create(data.toString(), MediaType.get("application/json"));
         Request request = new Request.Builder()
-                .url(PROJECT_URL + "/events") // Pastikan endpoint ini benar jika berbeda dari /rest/v1/event
+                .url(PROJECT_URL + "/events")
                 .addHeader("apikey", API_KEY)
                 .addHeader("Authorization", "Bearer " + API_KEY)
                 .post(body)
@@ -180,47 +106,77 @@ public class SupabaseService {
         client.newCall(request).enqueue(callback);
     }
 
-    // 🔹 UPLOAD BANNER (PATCH event table to add banner_url)
-    public static void uploadBanner(String eventId, File imageFile, Callback callback) {
-        JSONObject json = new JSONObject();
-        // Asumsi 'banner_url' akan menyimpan nama file atau URL setelah diunggah ke Storage
-        // Jika Anda mengunggah ke Storage dan ingin menyimpan URL publik, Anda perlu melakukan itu secara terpisah
-        json.put("banner_url", imageFile.getName());
 
-        RequestBody body = RequestBody.create(
-                json.toString(),
-                MediaType.parse("application/json")
-        );
+    public static void uploadBanner(String eventId, File imageFile, Callback callback) {
+        String fileName = "banner_" + eventId + "_" + System.currentTimeMillis() + ".jpg";
+
+        uploadImageToStorage(fileName, imageFile, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure(call, e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    callback.onResponse(call, response);
+                    return;
+                }
+
+                // Setelah upload ke storage berhasil, simpan path di tabel event
+                JSONObject json = new JSONObject();
+                json.put("banner_url", fileName); // hanya simpan nama file
+
+                RequestBody body = RequestBody.create(
+                        json.toString(),
+                        MediaType.parse("application/json")
+                );
+
+                Request patchRequest = new Request.Builder()
+                        .url(PROJECT_URL + "/rest/v1/event?id=eq." + eventId)
+                        .patch(body)
+                        .addHeader("apikey", API_KEY)
+                        .addHeader("Authorization", "Bearer " + API_KEY)
+                        .addHeader("Content-Type", "application/json")
+                        .addHeader("Prefer", "return=representation")
+                        .build();
+
+                client.newCall(patchRequest).enqueue(callback);
+            }
+        });
+    }
+
+    public static void uploadImageToStorage(String fileName, File imageFile, Callback callback) {
+        MediaType mediaType = MediaType.parse("image/*");
+        RequestBody fileBody = RequestBody.create(imageFile, mediaType);
 
         Request request = new Request.Builder()
-                .url(PROJECT_URL + "/rest/v1/event?id=eq." + eventId)
-                .patch(body)
-                .addHeader("apikey", API_KEY)
+                .url(PROJECT_URL + "/storage/v1/object/event-banner/" + fileName) // ← bucket 'event-banner'
                 .addHeader("Authorization", "Bearer " + API_KEY)
-                .addHeader("Content-Type", "application/json")
-                .addHeader("Prefer", "return=representation")
+                .addHeader("apikey", API_KEY)
+                .addHeader("Content-Type", "image/*")
+                .put(fileBody)
                 .build();
 
         client.newCall(request).enqueue(callback);
     }
 
-    // 🔹 UPLOAD TIKET (Insert into 'tiket' table)
+
     public static void uploadTiket(String eventId, String jenisEvent, String namaTiket, String harga, String jumlah, Callback callback) {
 
         System.out.println("Mengirim data tiket ke Supabase: " );
 
         JSONObject json = new JSONObject();
-        // Pastikan event_id sesuai dengan tipe data di tabel 'tiket' Anda
         json.put("event_id", Integer.parseInt(eventId));
         json.put("jenis_event", jenisEvent);
         json.put("nama_tiket", namaTiket);
-        json.put("harga", Integer.parseInt(harga)); // Pastikan harga adalah angka
-        json.put("jumlah", Integer.parseInt(jumlah)); // Pastikan jumlah adalah angka
+        json.put("harga", Integer.parseInt(harga));
+        json.put("jumlah", Integer.parseInt(jumlah));
 
         RequestBody body = RequestBody.create(json.toString(), MediaType.get("application/json"));
 
         Request request = new Request.Builder()
-                .url(PROJECT_URL + "/rest/v1/tiket") // Pastikan endpoint ini sesuai dengan nama tabel tiket Anda
+                .url(PROJECT_URL + "/rest/v1/tiket?event_id=eq." + eventId)// pastikan endpoint ini sesuai dengan Supabase kamu
                 .post(body)
                 .addHeader("apikey", API_KEY)
                 .addHeader("Authorization", "Bearer " + API_KEY)
@@ -231,178 +187,32 @@ public class SupabaseService {
         client.newCall(request).enqueue(callback);
     }
 
-    // 🔹 GET ALL EVENTS
-    public static void getEvents(Callback callback) {
-        HttpUrl url = HttpUrl.parse(PROJECT_URL + "/rest/v1/event")
-                .newBuilder()
+    public static void getEventById(String eventId, Callback callback) {
+        Request request = new Request.Builder()
+                .url(PROJECT_URL + "/rest/v1/event?id=eq." + eventId)
+                .get()
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", "Bearer " + API_KEY)
+                .addHeader("Accept", "application/json")
                 .build();
+
+        client.newCall(request).enqueue(callback);
+    }
+
+    public static void getTiketByEventId(String eventId, Callback callback) {
+        String url = PROJECT_URL + "/rest/v1/tiket?event_id=eq." + eventId;
 
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("apikey", API_KEY)
                 .addHeader("Authorization", "Bearer " + API_KEY)
                 .addHeader("Accept", "application/json")
-                .get()
                 .build();
 
         client.newCall(request).enqueue(callback);
     }
 
-    // 🔹 GET TICKET BY EVENT ID
-    public static void getTicketByEventId(String eventId, Callback callback) {
-        HttpUrl url = HttpUrl.parse(PROJECT_URL + "/rest/v1/tiket")
-                .newBuilder()
-                .addQueryParameter("event_id", "eq." + eventId)
-                .build();
 
-        Request request = new Request.Builder()
-                .url(url)
-                .addHeader("apikey", API_KEY)
-                .addHeader("Authorization", "Bearer " + API_KEY)
-                .addHeader("Accept", "application/json")
-                .get()
-                .build();
 
-        client.newCall(request).enqueue(callback);
-    }
 
-    // 🔹 SAVE TICKET PURCHASE / TRANSACTION
-    public static void saveTicketPurchase(String eventId, String userId, String ticketId, String ticketType,
-                                          double ticketPrice, int quantity, String visitorFullName,
-                                          String visitorEmail, String visitorPhone,
-                                          String paymentMethod, double totalAmount, String qrCodeData,
-                                          Callback callback) {
-        JSONObject json = new JSONObject();
-        json.put("event_id", eventId);
-        json.put("buyer_id", userId);
-        json.put("ticket_id", ticketId);
-        json.put("quantity", quantity);
-        json.put("total_amount", totalAmount);
-        json.put("payment_method", paymentMethod);
-        json.put("qr_code_data", qrCodeData);
-        json.put("visitor_fullname", visitorFullName);
-        json.put("visitor_email", visitorEmail);
-        json.put("visitor_phone", visitorPhone);
-        json.put("ticket_type", ticketType);
-        json.put("ticket_price", ticketPrice);
-
-        json.put("transaction_type", "Ticket Purchase");
-        json.put("payment_status", "Completed");
-
-        RequestBody body = RequestBody.create(json.toString(), JSON);
-
-        Request request = new Request.Builder()
-                .url(PROJECT_URL + "/rest/v1/transactions") // Pastikan ini sesuai dengan nama tabel transaksi Anda
-                .addHeader("apikey", API_KEY)
-                .addHeader("Authorization", "Bearer " + API_KEY)
-                .addHeader("Content-Type", "application/json")
-                .addHeader("Prefer", "return=representation")
-                .post(body)
-                .build();
-
-        client.newCall(request).enqueue(callback);
-    }
-
-    // 🔹 UPLOAD PROFILE IMAGE TO SUPABASE STORAGE AND UPDATE PROFILE TABLE
-    public static void uploadProfileImage(String userId, File imageFile, Callback callback) {
-        // Pastikan nama bucket di sini sama persis dengan yang Anda buat di Supabase Storage
-        String bucketName = "profile-pictures";
-        String fileNameInStorage = userId + "_" + System.currentTimeMillis() + "_" + imageFile.getName();
-        String contentType = "image/jpeg"; // Default, akan mencoba infer
-
-        try {
-            contentType = Files.probeContentType(imageFile.toPath());
-            if (contentType == null) {
-                String fileExtension = getFileExtension(imageFile.getName());
-                if (fileExtension.equalsIgnoreCase("png")) {
-                    contentType = "image/png";
-                } else if (fileExtension.equalsIgnoreCase("jpg") || fileExtension.equalsIgnoreCase("jpeg")) {
-                    contentType = "image/jpeg";
-                } else {
-                    contentType = "application/octet-stream";
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            contentType = "application/octet-stream";
-        }
-
-        // Step 1: Upload the image file to Supabase Storage
-        RequestBody requestBody = RequestBody.create(imageFile, MediaType.parse(contentType));
-
-        Request uploadRequest = new Request.Builder()
-                .url(PROJECT_URL + "/storage/v1/object/" + bucketName + "/" + fileNameInStorage)
-                .addHeader("apikey", API_KEY)
-                .addHeader("Authorization", "Bearer " + API_KEY)
-                .addHeader("Content-Type", contentType)
-                .put(requestBody)
-                .build();
-
-        client.newCall(uploadRequest).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                callback.onFailure(call, e); // Lanjutkan kegagalan ke callback asli
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    // Step 2: Dapatkan URL publik dari gambar yang diunggah
-                    String publicImageUrl = PROJECT_URL + "/storage/v1/object/public/" + bucketName + "/" + fileNameInStorage;
-
-                    // Step 3: Perbarui tabel profil pengguna dengan URL gambar baru
-                    JSONObject updateJson = new JSONObject();
-                    // Pastikan nama kolom di tabel 'profile' Anda adalah 'profile_picture_url'
-                    updateJson.put("profile_picture_url", publicImageUrl);
-
-                    RequestBody updateBody = RequestBody.create(updateJson.toString(), JSON);
-
-                    Request updateProfileRequest = new Request.Builder()
-                            .url(PROJECT_URL + "/rest/v1/profile?user_id=eq." + userId)
-                            .patch(updateBody)
-                            .addHeader("apikey", API_KEY)
-                            .addHeader("Authorization", "Bearer " + API_KEY)
-                            .addHeader("Content-Type", "application/json")
-                            .addHeader("Prefer", "return=representation")
-                            .build();
-
-                    client.newCall(updateProfileRequest).enqueue(callback); // Lanjutkan sukses/gagal dari update profil
-                } else {
-                    callback.onResponse(call, response); // Lanjutkan respons (misal, kode error dari storage)
-                }
-            }
-        });
-    }
-
-    // Helper untuk mendapatkan ekstensi file
-    private static String getFileExtension(String fileName) {
-        int dotIndex = fileName.lastIndexOf('.');
-        if (dotIndex > 0 && dotIndex < fileName.length() - 1) {
-            return fileName.substring(dotIndex + 1);
-        }
-        return "";
-    }
-
-    // 🔹 GET USER DATA (fullname and email) dari tabel 'user'
-    public static void getUserData(String userId, Callback callback) {
-        // GANTI: Pastikan nama tabel di sini adalah yang Anda gunakan untuk registrasi/login
-        // Misalnya, jika Anda menggunakan tabel 'users' untuk data registrasi, ganti '/rest/v1/user' menjadi '/rest/v1/users'
-        HttpUrl url = HttpUrl.parse(PROJECT_URL + "/rest/v1/user")
-                .newBuilder()
-                // Asumsi kolom ID di tabel 'user' adalah 'id'
-                .addQueryParameter("id", "eq." + userId)
-                // Pilih kolom 'fullname' dan 'email'. Sesuaikan jika nama kolom berbeda di tabel 'user' Anda
-                .addQueryParameter("select", "fullname,email")
-                .build();
-
-        Request request = new Request.Builder()
-                .url(url)
-                .addHeader("apikey", API_KEY)
-                .addHeader("Authorization", "Bearer " + API_KEY)
-                .addHeader("Accept", "application/json")
-                .get()
-                .build();
-
-        client.newCall(request).enqueue(callback);
-    }
 }
