@@ -101,7 +101,7 @@
                                 <Font name="Segoe UI" size="14.0" />
                             </font>
                         </Button>
-                        <Button fx:id="profilBtn" alignment="CENTER_LEFT" mnemonicParsing="false" prefHeight="40.0" prefWidth="250.0" style="-fx-background-color: transparent; -fx-background-radius: 0;" text="Profil" textFill="WHITE" onAction="#handleGoToProfil">
+                        <Button fx:id="profileBtn" alignment="CENTER_LEFT" mnemonicParsing="false" prefHeight="40.0" prefWidth="250.0" style="-fx-background-color: transparent; -fx-background-radius: 0;" text="Profil" textFill="WHITE" onAction="#handleGoToProfil">
                             <graphic>
                                 <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                                     <image>
@@ -120,17 +120,17 @@
                     </children>
                 </VBox>
                 <Region VBox.vgrow="ALWAYS" />
-            <Button fx:id="loginBtn" prefHeight="50.0" prefWidth="97.0" style="-fx-background-color: #c00c0c; -fx-background-radius: 8;" text="Keluar" textFill="WHITE">
-               <padding>
-                  <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />
-               </padding>
-               <font>
-                  <Font name="Segoe UI Bold" size="16.0" />
-               </font>
-               <VBox.margin>
-                  <Insets bottom="30.0" />
-               </VBox.margin>
-            </Button>
+                <Button fx:id="loginBtn" prefHeight="50.0" prefWidth="97.0" style="-fx-background-color: #c00c0c; -fx-background-radius: 8;" text="Keluar" textFill="WHITE">
+                    <padding>
+                        <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />
+                    </padding>
+                    <font>
+                        <Font name="Segoe UI Bold" size="16.0" />
+                    </font>
+                    <VBox.margin>
+                        <Insets bottom="30.0" />
+                    </VBox.margin>
+                </Button>
             </children>
         </VBox>
 

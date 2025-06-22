@@ -3,6 +3,8 @@ package com.example.sapatatix.service;
 import okhttp3.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import javax.security.auth.callback.Callback;
 import java.io.IOException;
 import java.io.File;
 
@@ -46,6 +48,67 @@ public class SupabaseService {
                 .addHeader("Authorization", "Bearer " + API_KEY)
                 .addHeader("Accept", "application/json")
                 .get()
+                .build();
+
+        client.newCall(request).enqueue(callback);
+    }
+
+    // 🔹 SIMPAN DATA PROFIL
+    public static void createProfile(String userId, String namaDepan, String namaBelakang, String telepon, String alamat, String kota, Callback callback) {
+        String json = "{"
+                + "\"user_id\":\"" + userId + "\","
+                + "\"nama_depan\":\"" + namaDepan + "\","
+                + "\"nama_belakang\":\"" + namaBelakang + "\","
+                + "\"telepon\":\"" + telepon + "\","
+                + "\"alamat\":\"" + alamat + "\","
+                + "\"kota\":\"" + kota + "\""
+                + "}";
+
+        Request request = new Request.Builder()
+                .url(PROJECT_URL + "/rest/v1/profile")
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", "Bearer " + API_KEY)
+                .addHeader("Content-Type", "application/json")
+                .post(RequestBody.create(json, JSON))
+                .build();
+
+        client.newCall(request).enqueue(callback);
+    }
+
+    // 🔹 AMBIL DATA PROFIL BERDASARKAN USER_ID
+    public static void getProfile(String userId, Callback callback) {
+        HttpUrl url = HttpUrl.parse(PROJECT_URL + "/rest/v1/profile")
+                .newBuilder()
+                .addQueryParameter("user_id", "eq." + userId)
+                .build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", "Bearer " + API_KEY)
+                .addHeader("Accept", "application/json")
+                .get()
+                .build();
+
+        client.newCall(request).enqueue(callback);
+    }
+
+    // 🔹 UPDATE DATA PROFIL
+    public static void updateProfile(String userId, String namaDepan, String namaBelakang, String telepon, String alamat, String kota, Callback callback) {
+        String json = "{"
+                + "\"nama_depan\":\"" + namaDepan + "\","
+                + "\"nama_belakang\":\"" + namaBelakang + "\","
+                + "\"telepon\":\"" + telepon + "\","
+                + "\"alamat\":\"" + alamat + "\","
+                + "\"kota\":\"" + kota + "\""
+                + "}";
+
+        Request request = new Request.Builder()
+                .url(PROJECT_URL + "/rest/v1/profile?user_id=eq." + userId)
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", "Bearer " + API_KEY)
+                .addHeader("Content-Type", "application/json")
+                .method("PATCH", RequestBody.create(json, JSON)) // Gunakan PATCH untuk update sebagian
                 .build();
 
         client.newCall(request).enqueue(callback);

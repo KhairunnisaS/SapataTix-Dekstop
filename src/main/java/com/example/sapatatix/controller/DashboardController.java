@@ -13,7 +13,7 @@ public class DashboardController {
 
     @FXML private Button buatEventBtn;
     @FXML private Button riwayatBtn;
-    @FXML private Button profilBtn;
+    @FXML private Button profileBtn;
 
     @FXML
     public void handleGoToBuatEvent() {
@@ -34,7 +34,7 @@ public class DashboardController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent root = loader.load();
-            Stage stage = (Stage) profilBtn.getScene().getWindow(); // gunakan salah satu tombol
+            Stage stage = (Stage) profileBtn.getScene().getWindow(); // gunakan salah satu tombol
             stage.setScene(new Scene(root));
             stage.setTitle(title);
             stage.show();
