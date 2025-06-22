@@ -17,7 +17,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="720.0" prefWidth="1280.0" style="-fx-background-color: #0F1017;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sapatatix.controller.BuatEventEditController">
+<AnchorPane prefHeight="720.0" prefWidth="1280.0" style="-fx-background-color: #0F1017;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sapatatix.controller.BuatEventDeskripsiController">
     <children>
         <ImageView fitHeight="720.0" fitWidth="1280.0" pickOnBounds="true" preserveRatio="true">
             <image>
@@ -163,7 +163,7 @@
 
                                 <HBox alignment="CENTER" spacing="50.0">
                                     <children>
-                                        <Label style="-fx-underline: true;" text="Edit" textFill="#b83d6e">
+                                        <Label style="-fx-underline: true;" text="Deskripsi" textFill="#b83d6e">
                                             <font>
                                                 <Font name="Segoe UI Bold" size="16.0" />
                                             </font>
@@ -412,7 +412,7 @@
                                 <!-- Save & Continue Button -->
                                 <HBox alignment="CENTER_RIGHT" prefHeight="50.0" prefWidth="800.0">
                                     <children>
-                                        <Button fx:id="simpanBtn" style="-fx-background-color: #B83D6E; -fx-background-radius: 8;" text="Simpan &amp; Lanjutkan" textFill="WHITE" onAction="#handleSimpanEvent">
+                                        <Button fx:id="btnSimpan" style="-fx-background-color: #B83D6E; -fx-background-radius: 8;" text="Simpan &amp; Lanjutkan" textFill="WHITE" onAction="#handleSimpanEvent">
                                             <padding>
                                                 <Insets bottom="15.0" left="30.0" right="30.0" top="15.0" />
                                             </padding>
