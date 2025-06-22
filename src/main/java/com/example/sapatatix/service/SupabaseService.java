@@ -191,5 +191,29 @@ public class SupabaseService {
         client.newCall(request).enqueue(callback);
     }
 
+    public static void uploadTiket(String eventId, String jenisEvent, String namaTiket, String harga, String jumlah, Callback callback) {
+
+        System.out.println("Mengirim data tiket ke Supabase: " );
+
+        JSONObject json = new JSONObject();
+        json.put("event_id", Integer.parseInt(eventId));
+        json.put("jenis_event", jenisEvent);
+        json.put("nama_tiket", namaTiket);
+        json.put("harga", Integer.parseInt(harga));
+        json.put("jumlah", Integer.parseInt(jumlah));
+
+        RequestBody body = RequestBody.create(json.toString(), MediaType.get("application/json"));
+
+        Request request = new Request.Builder()
+                .url(PROJECT_URL + "/rest/v1/tiket?event_id=eq." + eventId)// pastikan endpoint ini sesuai dengan Supabase kamu
+                .post(body)
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", "Bearer " + API_KEY)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Prefer", "return=representation")
+                .build();
+
+        client.newCall(request).enqueue(callback);
+    }
 
 }
