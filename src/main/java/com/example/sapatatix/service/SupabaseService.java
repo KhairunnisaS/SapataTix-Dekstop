@@ -4,13 +4,15 @@ import okhttp3.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javax.security.auth.callback.Callback;
 import java.io.IOException;
 import java.io.File;
+import okhttp3.Callback; // Pastikan ini adalah okhttp3.Callback
 
 public class SupabaseService {
-    private static final String PROJECT_URL = "https://mcqhhdeqkuklvxglpycb.supabase.co"; // GANTI: Sesuaikan dengan URL project Supabase kamu
-    private static final String API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1jcWhoZGVxa3VrbHZ4Z2xweWNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA0NDM3NjUsImV4cCI6MjA2NjAxOTc2NX0.BpXkt9b6FXT6lfhShUX8f2BCL7_M_iqwYsiWsEe9nf8"; // GANTI: Public API Key dari Project Settings > API
+    // GANTI: Sesuaikan dengan URL project Supabase kamu
+    private static final String PROJECT_URL = "https://mcqhhdeqkuklvxglpycb.supabase.co";
+    // GANTI: Public API Key dari Project Settings > API
+    private static final String API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1jcWhoZGVxa3VrbHZ4Z2xweWNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA0NDM3NjUsImV4cCI6MjA2NjAxOTc2NX0.BpXkt9b6FXT6lfhShUX8f2BCL7_M_iqwYsiWsEe9nf8";
 
     private static final OkHttpClient client = new OkHttpClient();
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
@@ -24,7 +26,7 @@ public class SupabaseService {
                 + "}";
 
         Request request = new Request.Builder()
-                .url(PROJECT_URL + "/rest/v1/user") // endpoint Supabase REST
+                .url(PROJECT_URL + "/rest/v1/user")
                 .addHeader("apikey", API_KEY)
                 .addHeader("Authorization", "Bearer " + API_KEY)
                 .addHeader("Content-Type", "application/json")
@@ -108,12 +110,13 @@ public class SupabaseService {
                 .addHeader("apikey", API_KEY)
                 .addHeader("Authorization", "Bearer " + API_KEY)
                 .addHeader("Content-Type", "application/json")
-                .method("PATCH", RequestBody.create(json, JSON)) // Gunakan PATCH untuk update sebagian
+                .method("PATCH", RequestBody.create(json, JSON))
                 .build();
 
         client.newCall(request).enqueue(callback);
     }
 
+    // 🔹 BUAT EVENT
     public static void buatEvent(String judul, String kategori, String tempat, String deskripsi,
                                  String host, String noHp, String sesi, String tanggal,
                                  String waktuMulai, String waktuBerakhir, String jenisEvent, String userId,
@@ -134,7 +137,6 @@ public class SupabaseService {
         json.put("waktu_berakhir", waktuBerakhir);
         json.put("jenis_event", jenisEvent);
 
-        // Pastikan userId adalah integer, bukan string kosong
         if (userId != null && !userId.isEmpty()) {
             json.put("user_id", Integer.parseInt(userId));
         } else {
@@ -148,8 +150,8 @@ public class SupabaseService {
                 .addHeader("apikey", API_KEY)
                 .addHeader("Authorization", "Bearer " + API_KEY)
                 .addHeader("Content-Type", "application/json")
-                .addHeader("Prefer", "return=representation") // HARUS ADA supaya respons JSON-nya termasuk 'id'
-                .post(body) // ⬅⬅⬅ INI yang kurang di kodingan kamu sebelumnya
+                .addHeader("Prefer", "return=representation")
+                .post(body)
                 .build();
 
         client.newCall(request).enqueue(callback);
@@ -169,10 +171,10 @@ public class SupabaseService {
         client.newCall(request).enqueue(callback);
     }
 
-
+    // 🔹 UPLOAD BANNER
     public static void uploadBanner(String eventId, File imageFile, Callback callback) {
         JSONObject json = new JSONObject();
-        json.put("banner_url", imageFile.getName()); // atau imageFile.getAbsolutePath() jika kamu ingin path penuh
+        json.put("banner_url", imageFile.getName());
 
         RequestBody body = RequestBody.create(
                 json.toString(),
@@ -180,7 +182,7 @@ public class SupabaseService {
         );
 
         Request request = new Request.Builder()
-                .url(PROJECT_URL + "/rest/v1/event?id=eq." + eventId) // ← PENTING: harus ada /rest/v1/
+                .url(PROJECT_URL + "/rest/v1/event?id=eq." + eventId)
                 .patch(body)
                 .addHeader("apikey", API_KEY)
                 .addHeader("Authorization", "Bearer " + API_KEY)
@@ -191,6 +193,7 @@ public class SupabaseService {
         client.newCall(request).enqueue(callback);
     }
 
+    // 🔹 UPLOAD TIKET (Jika tiket adalah entitas terpisah dari event)
     public static void uploadTiket(String eventId, String jenisEvent, String namaTiket, String harga, String jumlah, Callback callback) {
 
         System.out.println("Mengirim data tiket ke Supabase: " );
@@ -205,7 +208,7 @@ public class SupabaseService {
         RequestBody body = RequestBody.create(json.toString(), MediaType.get("application/json"));
 
         Request request = new Request.Builder()
-                .url(PROJECT_URL + "/rest/v1/tiket?event_id=eq." + eventId)// pastikan endpoint ini sesuai dengan Supabase kamu
+                .url(PROJECT_URL + "/rest/v1/tiket?event_id=eq." + eventId) // Pastikan endpoint ini sesuai dengan Supabase kamu
                 .post(body)
                 .addHeader("apikey", API_KEY)
                 .addHeader("Authorization", "Bearer " + API_KEY)
@@ -216,4 +219,54 @@ public class SupabaseService {
         client.newCall(request).enqueue(callback);
     }
 
+    // 🔹 GET ALL EVENTS
+    public static void getEvents(Callback callback) {
+        HttpUrl url = HttpUrl.parse(PROJECT_URL + "/rest/v1/event")
+                .newBuilder()
+                .build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", "Bearer " + API_KEY)
+                .addHeader("Accept", "application/json")
+                .get()
+                .build();
+
+        client.newCall(request).enqueue(callback);
+    }
+
+    // 🔹 SAVE TICKET PURCHASE / TRANSACTION
+    // Anda perlu membuat tabel 'transactions' di Supabase dengan kolom yang sesuai
+    public static void saveTicketPurchase(String eventId, String userId, String ticketType,
+                                          double ticketPrice, int quantity, String visitorFullName,
+                                          String visitorEmail, String visitorPhone,
+                                          String paymentMethod, double totalAmount, String qrCodeData,
+                                          Callback callback) {
+        JSONObject json = new JSONObject();
+        json.put("event_id", eventId);
+        json.put("user_id", userId);
+        json.put("ticket_type", ticketType);
+        json.put("ticket_price", ticketPrice);
+        json.put("quantity", quantity);
+        json.put("visitor_fullname", visitorFullName);
+        json.put("visitor_email", visitorEmail);
+        json.put("visitor_phone", visitorPhone);
+        json.put("payment_method", paymentMethod);
+        json.put("total_amount", totalAmount);
+        json.put("qr_code_data", qrCodeData);
+
+        RequestBody body = RequestBody.create(json.toString(), JSON);
+
+        Request request = new Request.Builder()
+                .url(PROJECT_URL + "/rest/v1/transactions") // Asumsi nama tabelnya 'transactions'
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", "Bearer " + API_KEY)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Prefer", "return=representation")
+                .post(body)
+                .build();
+
+        client.newCall(request).enqueue(callback);
+    }
 }
