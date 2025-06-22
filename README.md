@@ -103,7 +103,7 @@ Aplikasi seharusnya akan terbuka, menampilkan halaman beranda, dan Anda bisa mul
 
 ## Video Presentasi YouTube
 
-*(Mohon masukkan link video presentasi YouTube Anda di sini jika ada.)*
-`https://youtu.be/cxYkvqAKkbo`
+*(`https://youtu.be/cxYkvqAKkbo`)*
+
 
 ---
