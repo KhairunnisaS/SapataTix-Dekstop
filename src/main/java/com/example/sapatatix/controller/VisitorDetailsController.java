@@ -1,6 +1,7 @@
 package com.example.sapatatix.controller;
 
 import com.example.sapatatix.service.TransactionData;
+import com.example.sapatatix.model.Event; // Import Event model
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -42,34 +43,28 @@ public class VisitorDetailsController {
     }
 
     private void initializeData() {
-        if (transactionData != null && transactionData.getEvent() != null) {
-            eventNameHeaderLabel.setText(transactionData.getEvent().optString("judul", ""));
+        if (transactionData != null && transactionData.getEventObject() != null) {
+            Event event = transactionData.getEventObject(); // Ambil objek Event dari TransactionData
 
-            String tanggalMulai = transactionData.getEvent().optString("tanggal_mulai", "");
-            String waktuMulai = transactionData.getEvent().optString("waktu_mulai", "");
-            String waktuBerakhir = transactionData.getEvent().optString("waktu_berakhir", "");
+            eventNameHeaderLabel.setText(event.getJudul()); // Menggunakan getter dari objek Event
+
+            String tanggalMulai = event.getTanggalMulai().format(DateTimeFormatter.ISO_LOCAL_DATE); // Ambil dari objek Event
+            String waktuMulai = event.getWaktuMulai().format(DateTimeFormatter.ISO_LOCAL_TIME);     // Ambil dari objek Event
+            String waktuBerakhir = event.getWaktuBerakhir().format(DateTimeFormatter.ISO_LOCAL_TIME); // Ambil dari objek Event
+
 
             String formattedDate = "";
-            if (!tanggalMulai.isEmpty()) {
-                try {
-                    LocalDate date = LocalDate.parse(tanggalMulai);
-                    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd MMM");
-                    formattedDate = date.format(dateFormatter);
-                } catch (Exception e) {
-                    formattedDate = "Tanggal Tidak Valid";
-                }
+            if (event.getTanggalMulai() != null) {
+                formattedDate = event.getTanggalMulai().format(DateTimeFormatter.ofPattern("dd MMM"));
+            } else {
+                formattedDate = "Tanggal Tidak Valid"; // Fallback jika tanggal null
             }
 
             String formattedTime = "";
-            if (!waktuMulai.isEmpty() && !waktuBerakhir.isEmpty()) {
-                try {
-                    LocalTime startTime = LocalTime.parse(waktuMulai);
-                    LocalTime endTime = LocalTime.parse(waktuBerakhir);
-                    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm"); // 24-hour format
-                    formattedTime = startTime.format(timeFormatter) + " - " + endTime.format(timeFormatter);
-                } catch (Exception e) {
-                    formattedTime = waktuMulai + " - " + waktuBerakhir;
-                }
+            if (event.getWaktuMulai() != null && event.getWaktuBerakhir() != null) {
+                formattedTime = event.getWaktuMulai().format(DateTimeFormatter.ofPattern("HH:mm")) + " - " + event.getWaktuBerakhir().format(DateTimeFormatter.ofPattern("HH:mm"));
+            } else {
+                formattedTime = "Waktu Tidak Valid"; // Fallback jika waktu null
             }
             eventDateTimeHeaderLabel.setText(formattedDate + " | " + formattedTime);
 
@@ -104,7 +99,7 @@ public class VisitorDetailsController {
             newStage.setScene(new Scene(root));
 
             controller.setDialogStage(newStage);
-            controller.setTransactionData(transactionData); // Pass data back
+            controller.setTransactionData(transactionData);
 
             dialogStage.close();
             newStage.showAndWait();
@@ -129,7 +124,6 @@ public class VisitorDetailsController {
             return;
         }
 
-        // Save data to transactionData
         transactionData.setVisitorFullName(fullName);
         transactionData.setVisitorEmail(email);
         transactionData.setVisitorPhone(phone);
@@ -146,7 +140,7 @@ public class VisitorDetailsController {
             newStage.setScene(new Scene(root));
 
             controller.setDialogStage(newStage);
-            controller.setTransactionData(transactionData); // Pass data
+            controller.setTransactionData(transactionData);
 
             dialogStage.close();
             newStage.showAndWait();

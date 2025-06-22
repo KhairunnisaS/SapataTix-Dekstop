@@ -1,6 +1,7 @@
 package com.example.sapatatix.controller;
 
 import com.example.sapatatix.service.TransactionData;
+import com.example.sapatatix.model.Ticket; // Import kelas Ticket model
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -23,7 +24,7 @@ public class TicketSelectionController {
 
     private Stage dialogStage;
     private TransactionData transactionData;
-    private double currentTicketPrice;
+    private double currentTicketPrice; // Harga per tiket dari objek Ticket
 
     public void setDialogStage(Stage dialogStage) {
         this.dialogStage = dialogStage;
@@ -42,10 +43,12 @@ public class TicketSelectionController {
     }
 
     private void initializeData() {
-        if (transactionData != null && transactionData.getEvent() != null) {
-            // Use ticketType and ticketPrice from transactionData (set in EventDetailController)
-            currentTicketPrice = transactionData.getTicketPrice();
-            String ticketName = transactionData.getTicketType();
+        if (transactionData != null && transactionData.getEventObject() != null && transactionData.getTicketObject() != null) {
+            Ticket ticket = transactionData.getTicketObject(); // Ambil objek Ticket
+
+            // Menggunakan getter dan metode polimorfik dari objek Ticket
+            String ticketName = ticket.getNamaTiket();
+            currentTicketPrice = ticket.calculatePrice(); // Menggunakan calculatePrice() polimorfik
 
             ticketTypeNameLabel.setText(ticketName);
             ticketTypePriceLabel.setText(formatRupiah(currentTicketPrice));
@@ -66,9 +69,13 @@ public class TicketSelectionController {
         totalQuantityLabel.setText(String.valueOf(quantity));
         totalPriceLabel.setText(formatRupiah(total));
 
+        // Update transactionData
         transactionData.setQuantity(quantity);
-        transactionData.setTicketType(ticketTypeNameLabel.getText());
-        transactionData.setTicketPrice(currentTicketPrice);
+        // Pastikan ticketType dan ticketPrice di TransactionData juga diupdate sesuai objek Ticket
+        if (transactionData.getTicketObject() != null) {
+            transactionData.setTicketType(transactionData.getTicketObject().getNamaTiket());
+            transactionData.setTicketPrice(transactionData.getTicketObject().calculatePrice());
+        }
     }
 
     private String formatRupiah(double value) {

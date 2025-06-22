@@ -107,7 +107,8 @@ public class PaymentMethodController {
         }
 
         String dummyTransactionId = "TRX" + System.currentTimeMillis();
-        String dummyQrCodeData = "Event: " + transactionData.getEvent().optString("judul") +
+        // Menggunakan getEventObject().getJudul() karena TransactionData sekarang menyimpan objek Event
+        String dummyQrCodeData = "Event: " + transactionData.getEventObject().getJudul() +
                 "\nQty: " + transactionData.getQuantity() +
                 "\nBuyer: " + transactionData.getVisitorFullName() +
                 "\nEmail: " + transactionData.getVisitorEmail() +
@@ -115,11 +116,11 @@ public class PaymentMethodController {
         transactionData.setTransactionId(dummyTransactionId);
         transactionData.setQrCodeData(dummyQrCodeData);
 
-        // Call SupabaseService to save the transaction
+
         SupabaseService.saveTicketPurchase(
-                transactionData.getEvent().optString("id"), // ID Event
-                userId,                                     // User ID (buyer_id)
-                transactionData.getTicketId(),              // TICKET ID (from 'tiket' table)
+                transactionData.getEventObject().getId(), // Menggunakan getEventObject().getId()
+                userId,
+                transactionData.getTicketId(),
                 transactionData.getTicketType(),
                 transactionData.getTicketPrice(),
                 transactionData.getQuantity(),
