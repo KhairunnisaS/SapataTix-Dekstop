@@ -23,7 +23,7 @@ public class TicketSelectionController {
 
     private Stage dialogStage;
     private TransactionData transactionData;
-    private double currentTicketPrice; // Harga per tiket dari eventData
+    private double currentTicketPrice;
 
     public void setDialogStage(Stage dialogStage) {
         this.dialogStage = dialogStage;
@@ -36,7 +36,6 @@ public class TicketSelectionController {
 
     @FXML
     public void initialize() {
-        // Spinner setup, will be finalized in setTransactionData
         SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 10, 1);
         ticketQuantitySpinner.setValueFactory(valueFactory);
         ticketQuantitySpinner.valueProperty().addListener((obs, oldValue, newValue) -> updateTotals());
@@ -44,19 +43,17 @@ public class TicketSelectionController {
 
     private void initializeData() {
         if (transactionData != null && transactionData.getEvent() != null) {
-            // Asumsi event memiliki "harga_tiket" dan "jenis_tiket"
-            // Anda mungkin perlu menyesuaikan nama kolom 'harga_tiket' dan 'jenis_tiket' jika berbeda di database Supabase Anda
-            String ticketName = "Tiket Reguler " + transactionData.getEvent().optString("judul", "Event");
-            currentTicketPrice = transactionData.getEvent().optDouble("harga_tiket", 600000.0); // Default price jika tidak ditemukan
+            // Use ticketType and ticketPrice from transactionData (set in EventDetailController)
+            currentTicketPrice = transactionData.getTicketPrice();
+            String ticketName = transactionData.getTicketType();
 
             ticketTypeNameLabel.setText(ticketName);
             ticketTypePriceLabel.setText(formatRupiah(currentTicketPrice));
 
-            // Set initial quantity from transactionData if already selected
             if (transactionData.getQuantity() > 0) {
                 ticketQuantitySpinner.getValueFactory().setValue(transactionData.getQuantity());
             } else {
-                ticketQuantitySpinner.getValueFactory().setValue(1); // Default to 1
+                ticketQuantitySpinner.getValueFactory().setValue(1);
             }
             updateTotals();
         }
@@ -69,22 +66,19 @@ public class TicketSelectionController {
         totalQuantityLabel.setText(String.valueOf(quantity));
         totalPriceLabel.setText(formatRupiah(total));
 
-        // Update transactionData
         transactionData.setQuantity(quantity);
-        transactionData.setTicketType(ticketTypeNameLabel.getText()); // Simpan jenis tiket yang dipilih
-        transactionData.setTicketPrice(currentTicketPrice); // Simpan harga per tiket
+        transactionData.setTicketType(ticketTypeNameLabel.getText());
+        transactionData.setTicketPrice(currentTicketPrice);
     }
 
     private String formatRupiah(double value) {
         NumberFormat formatter = NumberFormat.getCurrencyInstance(new Locale("in", "ID"));
-        return formatter.format(value).replace("Rp", "Rp"); // Menghilangkan desimal jika .00
+        return formatter.format(value).replace("Rp", "Rp");
     }
 
     @FXML
     private void handleBack() {
-        dialogStage.close(); // Tutup pop-up saat ini, kembali ke EventDetailPopup
-        // Anda mungkin perlu membuka kembali EventDetailPopup jika ini adalah alur "kembali" dari langkah pertama
-        // Namun, jika EventDetailPopup masih terbuka di belakangnya, cukup close ini.
+        dialogStage.close();
     }
 
     @FXML
@@ -101,10 +95,10 @@ public class TicketSelectionController {
             newStage.setScene(new Scene(root));
 
             controller.setDialogStage(newStage);
-            controller.setTransactionData(transactionData); // Teruskan data transaksi
+            controller.setTransactionData(transactionData);
 
-            dialogStage.close(); // Tutup stage pemilihan tiket
-            newStage.showAndWait(); // Tampilkan stage detail pengunjung
+            dialogStage.close();
+            newStage.showAndWait();
         } catch (IOException e) {
             e.printStackTrace();
             System.err.println("Gagal memuat pop-up Detail Pengunjung: " + e.getMessage());

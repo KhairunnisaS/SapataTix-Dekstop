@@ -1,8 +1,8 @@
 package com.example.sapatatix.controller;
 
 import com.example.sapatatix.service.TransactionData;
-import com.example.sapatatix.service.SupabaseService; // Diperlukan untuk saveTicketPurchase
-import com.example.sapatatix.session.SessionManager; // Diperlukan untuk mendapatkan userId
+import com.example.sapatatix.service.SupabaseService;
+import com.example.sapatatix.session.SessionManager;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -18,7 +18,7 @@ import javafx.stage.Stage;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
-import org.json.JSONObject; // Diperlukan untuk memparsing respons Supabase
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.text.NumberFormat;
@@ -35,7 +35,7 @@ public class PaymentMethodController {
 
     private Stage dialogStage;
     private TransactionData transactionData;
-    private final double TAX_RATE = 0.10; // 10% pajak
+    private final double TAX_RATE = 0.10;
 
     public void setDialogStage(Stage dialogStage) {
         this.dialogStage = dialogStage;
@@ -96,20 +96,16 @@ public class PaymentMethodController {
         String paymentMethod = selectedRadioButton.getText();
         transactionData.setPaymentMethod(paymentMethod);
 
-        // Hitung total akhir
         double subtotal = transactionData.getTicketPrice() * transactionData.getQuantity();
         double tax = subtotal * TAX_RATE;
         double total = subtotal + tax;
 
-        // Mendapatkan userId dari SessionManager
-        String userId = SessionManager.userId; // Menggunakan SessionManager.userId
+        String userId = SessionManager.userId;
         if (userId == null || userId.isEmpty()) {
             showAlert("Error", "User tidak login. Silakan login terlebih dahulu.");
             return;
         }
 
-        // Simulasikan transaksi berhasil dan dapatkan ID transaksi & QR code data
-        // Dalam aplikasi nyata, ini akan melibatkan API gateway pembayaran dan respons server
         String dummyTransactionId = "TRX" + System.currentTimeMillis();
         String dummyQrCodeData = "Event: " + transactionData.getEvent().optString("judul") +
                 "\nQty: " + transactionData.getQuantity() +
@@ -119,11 +115,11 @@ public class PaymentMethodController {
         transactionData.setTransactionId(dummyTransactionId);
         transactionData.setQrCodeData(dummyQrCodeData);
 
-
-        // Panggil SupabaseService untuk menyimpan transaksi
+        // Call SupabaseService to save the transaction
         SupabaseService.saveTicketPurchase(
-                transactionData.getEvent().optString("id"), // ID Event dari JSONObject event
-                userId,                                     // ID User yang login
+                transactionData.getEvent().optString("id"), // ID Event
+                userId,                                     // User ID (buyer_id)
+                transactionData.getTicketId(),              // TICKET ID (from 'tiket' table)
                 transactionData.getTicketType(),
                 transactionData.getTicketPrice(),
                 transactionData.getQuantity(),
@@ -131,8 +127,8 @@ public class PaymentMethodController {
                 transactionData.getVisitorEmail(),
                 transactionData.getVisitorPhone(),
                 transactionData.getPaymentMethod(),
-                total,                                      // Total pembayaran
-                transactionData.getQrCodeData(),            // Data QR Code yang akan disimpan
+                total,
+                transactionData.getQrCodeData(),
                 new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
@@ -146,7 +142,6 @@ public class PaymentMethodController {
                         if (response.isSuccessful()) {
                             Platform.runLater(() -> {
                                 System.out.println("Transaksi berhasil disimpan: " + responseBody);
-                                // Lanjutkan ke pop-up pembayaran berhasil
                                 try {
                                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/sapatatix/FXML/PaymentSuccessPopup.fxml"));
                                     Parent root = loader.load();
@@ -159,7 +154,7 @@ public class PaymentMethodController {
                                     newStage.setScene(new Scene(root));
 
                                     controller.setDialogStage(newStage);
-                                    controller.setTransactionData(transactionData); // Teruskan data
+                                    controller.setTransactionData(transactionData);
 
                                     dialogStage.close();
                                     newStage.showAndWait();

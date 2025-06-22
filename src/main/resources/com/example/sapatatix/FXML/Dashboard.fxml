@@ -180,7 +180,7 @@
                     </children>
                 </HBox>
 
-                <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent; -fx-border-color: transparent;">
+                <ScrollPane fitToWidth="true" hbarPolicy="NEVER" prefHeight="554.0" prefWidth="1030.0" style="-fx-background-color: transparent; -fx-border-color: transparent;" vbarPolicy="AS_NEEDED" VBox.vgrow="ALWAYS">
                     <content>
                         <VBox style="-fx-background-color: transparent;">
                             <padding>

@@ -21,16 +21,14 @@
             </image>
         </ImageView>
 
-        <!-- Sidebar (Left Panel) -->
         <VBox alignment="TOP_CENTER" prefHeight="720.0" prefWidth="250.0" style="-fx-background-color: #0F1017;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
-                <!-- User Profile Section -->
                 <VBox alignment="CENTER" spacing="10.0">
                     <padding>
                         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                     </padding>
                     <children>
-                        <ImageView fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="sidebarProfileImageView" fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true" style="-fx-background-radius: 50;">
                             <image>
                                 <Image url="https://placehold.co/80x80/cccccc/333333?text=Profil" />
                             </image>
@@ -40,7 +38,7 @@
                                 <Font name="Segoe UI Bold" size="16.0" />
                             </font>
                         </Label>
-                        <Label text="E-mail Pengguna" textFill="#9e9e9e">
+                        <Label fx:id="sidebarEmailLabel" text="E-mail Pengguna" textFill="#9e9e9e">
                             <font>
                                 <Font name="Segoe UI" size="12.0" />
                             </font>
@@ -48,7 +46,6 @@
                     </children>
                 </VBox>
 
-                <!-- Navigation Buttons -->
                 <VBox prefWidth="250.0">
                     <children>
                         <Button fx:id="eventsBtn" alignment="CENTER_LEFT" mnemonicParsing="false" prefHeight="40.0" prefWidth="250.0" style="-fx-background-color: transparent; -fx-background-radius: 0;" text="Events" textFill="WHITE">
@@ -96,7 +93,6 @@
                                 <Font name="Segoe UI" size="14.0" />
                             </font>
                         </Button>
-                        <!-- Active "Profil" Button -->
                         <Button fx:id="profileNavBtn" alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="250.0" style="-fx-background-color: #B83D6E; -fx-background-radius: 0;" text="Profil" textFill="WHITE">
                             <graphic>
                                 <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
@@ -129,10 +125,8 @@
             </children>
         </VBox>
 
-        <!-- Main Content Area (Profile Page) -->
         <VBox layoutX="250.0" prefHeight="720.0" prefWidth="1030.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="250.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
-                <!-- Header Section -->
                 <HBox alignment="CENTER_LEFT" prefHeight="70.0" style="-fx-background-color: #0F1017;">
                     <padding>
                         <Insets left="20.0" right="20.0" />
@@ -146,7 +140,6 @@
                     </children>
                 </HBox>
 
-                <!-- Profile Form Panel -->
                 <VBox alignment="CENTER" VBox.vgrow="ALWAYS">
                     <children>
                         <VBox alignment="TOP_CENTER" prefHeight="652.0" prefWidth="700.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 25 25 0 0;">
@@ -163,19 +156,18 @@
                                     </VBox.margin>
                                 </Label>
 
-                                <StackPane prefHeight="50.0" prefWidth="50.0">
-                                    <children>
-                                        <ImageView fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" style="-fx-background-radius: 50;">
-                                            <image>
-                                                <Image url="https://placehold.co/100x100/cccccc/333333?text=Profil" />
-                                            </image>
-                                        </ImageView>
-                                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="BOTTOM_RIGHT">
-                                            <image>
-                                                <Image url="https://placehold.co/30x30/B83D6E/ffffff?text=📷" />
-                                            </image>
-                                        </ImageView>
-                                    </children>
+                                <StackPane onMouseClicked="#handleProfileImageClick" prefHeight="100.0" prefWidth="100.0"> <children>
+                                    <ImageView fx:id="profileImageView" fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" style="-fx-background-radius: 50;">
+                                        <image>
+                                            <Image url="https://placehold.co/100x100/cccccc/333333?text=Profil" />
+                                        </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="BOTTOM_RIGHT">
+                                        <image>
+                                            <Image url="https://placehold.co/30x30/B83D6E/ffffff?text=📷" />
+                                        </image>
+                                    </ImageView>
+                                </children>
                                     <VBox.margin>
                                         <Insets bottom="20.0" />
                                     </VBox.margin>
