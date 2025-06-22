@@ -1,10 +1,12 @@
 package com.example.sapatatix.controller;
 
+import javafx.stage.FileChooser;
+import javafx.scene.image.Image;
 import com.example.sapatatix.Main;
 import com.example.sapatatix.service.Session;
 import com.example.sapatatix.service.SupabaseService;
-import com.example.sapatatix.session.SessionManager;
 import java.io.File;
+import javafx.scene.image.ImageView;
 import java.io.IOException;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -17,13 +19,10 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 public class ProfileController {
 
@@ -31,7 +30,6 @@ public class ProfileController {
     @FXML private Button eventsBtn;
     @FXML private Button riwayatBtn;
     @FXML private Button buatEventBtn;
-    @FXML private Button profileNavBtn;
 
     // Tombol dan field pada halaman profil
     @FXML private Button loginBtn;
@@ -43,11 +41,11 @@ public class ProfileController {
     @FXML private TextField addressField;
     @FXML private TextField cityField;
 
-    @FXML private ImageView profileImageView;
-    @FXML private ImageView sidebarProfileImageView;
-    @FXML private Label sidebarEmailLabel;
+    @FXML private javafx.scene.image.ImageView fotoProfilView;
 
-    private File selectedProfileImageFile;
+    // Tambahan untuk foto profil
+    @FXML private ImageView profileImageView;
+    @FXML private Button uploadPhotoBtn;
 
     @FXML
     public void initialize() {
@@ -56,183 +54,85 @@ public class ProfileController {
         if (buatEventBtn != null) buatEventBtn.setOnAction(this::handleToBuatEventEdit);
         if (loginBtn != null) loginBtn.setOnAction(this::handleKeluar);
 
-        loadProfileData();
+        // Isi field dari data session jika tersedia
+        if (Session.getNamaDepan() != null) firstNameField.setText(Session.getNamaDepan());
+        if (Session.getNamaBelakang() != null) lastNameField.setText(Session.getNamaBelakang());
+        if (Session.getTelepon() != null) phoneField.setText(Session.getTelepon());
+        if (Session.getAlamat() != null) addressField.setText(Session.getAlamat());
+        if (Session.getKota() != null) cityField.setText(Session.getKota());
+
+        // Tampilkan kembali foto profil jika sudah ada di session
+        String fotoPath = Session.getFotoProfilPath();
+        if (fotoPath != null && !fotoPath.isEmpty()) {
+            Image foto = new Image(fotoPath);
+            fotoProfilView.setImage(foto); // Pastikan fx:id="fotoProfilView" di FXML
+        }
+
+
+        // Jika foto sudah pernah diupload sebelumnya
+        if (Session.getFotoProfilPath() != null && profileImageView != null) {
+            profileImageView.setImage(new Image("file:" + Session.getFotoProfilPath()));
+        }
     }
 
+    // Fungsi upload foto profil
+
+    @FXML
+    private void handleUploadPhoto(ActionEvent event) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Pilih Foto Profil");
+
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Gambar", "*.png", "*.jpg", "*.jpeg")
+        );
+
+        File selectedFile = fileChooser.showOpenDialog(null);  // <- null bisa kamu ganti dengan stage utama jika perlu
+        if (selectedFile != null) {
+            Image image = new Image(selectedFile.toURI().toString());
+            fotoProfilView.setImage(image);
+
+            // Simpan path ke session
+            Session.setFotoProfilPath(selectedFile.toURI().toString());
+            System.out.println("Gambar dipilih: " + selectedFile.toURI());  // DEBUG
+        } else {
+            System.out.println("Tidak ada file dipilih.");  // DEBUG
+        }
+    }
+
+
+    // Navigasi ke Dashboard
     private void handleToDashboard(ActionEvent event) {
         Main.setRoot("/com/example/sapatatix/FXML/Dashboard.fxml", "Dashboard");
     }
 
+    // Navigasi ke Riwayat
     private void handleToRiwayat(ActionEvent event) {
         Main.setRoot("/com/example/sapatatix/FXML/Riwayat.fxml", "Riwayat");
     }
 
+    // Navigasi ke Buat Event Edit
     private void handleToBuatEventEdit(ActionEvent event) {
-        Main.setRoot("/com/example/sapatatix/FXML/BuatEventDeskripsi.fxml", "Buat Event");
+        Main.setRoot("/com/example/sapatatix/FXML/BuatEventEdit.fxml", "Buat Event");
     }
 
+    // Navigasi ke halaman utama
     private void handleKeluar(ActionEvent event) {
-        SessionManager.userId = null;
-        Session.setCurrentUserId(null);
-        Session.setNamaDepan(null);
-        Session.setNamaBelakang(null);
-        Session.setTelepon(null);
-        Session.setAlamat(null);
-        Session.setKota(null);
         Main.setRoot("/com/example/sapatatix/FXML/BerandaFix.fxml", "Beranda");
     }
 
-    private void loadProfileData() {
-        final String userId = SessionManager.userId;
-        if (userId == null || userId.isEmpty()) {
-            Platform.runLater(() -> {
-                showAlert(AlertType.INFORMATION, "Informasi", "Anda belum login. Beberapa fitur profil mungkin tidak tersedia.");
-                firstNameField.setText("");
-                lastNameField.setText("");
-                phoneField.setText("");
-                addressField.setText("");
-                cityField.setText("");
-                sidebarEmailLabel.setText("Belum Login");
-                profileImageView.setImage(new Image("https://placehold.co/100x100/cccccc/333333?text=Profil"));
-                sidebarProfileImageView.setImage(new Image("https://placehold.co/80x80/cccccc/333333?text=Profil"));
-            });
-            return;
-        }
-
-        SupabaseService.getProfile(userId, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Platform.runLater(() -> showAlert(AlertType.ERROR, "Gagal", "Gagal memuat data profil: " + e.getMessage()));
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                try (ResponseBody responseBody = response.body()) {
-                    String responseStr = responseBody.string();
-                    if (response.isSuccessful() && !responseStr.trim().equals("[]")) {
-                        JSONArray jsonArray = new JSONArray(responseStr);
-                        JSONObject profileJson = jsonArray.getJSONObject(0);
-
-                        Platform.runLater(() -> {
-                            firstNameField.setText(profileJson.optString("nama_depan", ""));
-                            lastNameField.setText(profileJson.optString("nama_belakang", ""));
-                            phoneField.setText(profileJson.optString("telepon", ""));
-                            addressField.setText(profileJson.optString("alamat", ""));
-                            cityField.setText(profileJson.optString("kota", ""));
-                            sidebarEmailLabel.setText(Session.getCurrentUserId() != null ? Session.getCurrentUserId() : "Email Pengguna");
-
-                            String imageUrl = profileJson.optString("profile_picture_url", "");
-                            if (!imageUrl.isEmpty()) {
-                                try {
-                                    Image profileImage = new Image(imageUrl);
-                                    profileImageView.setImage(profileImage);
-                                    sidebarProfileImageView.setImage(profileImage);
-                                } catch (Exception e) {
-                                    System.err.println("Gagal memuat foto profil: " + e.getMessage());
-                                    profileImageView.setImage(new Image("https://placehold.co/100x100/cccccc/333333?text=Profil"));
-                                    sidebarProfileImageView.setImage(new Image("https://placehold.co/80x80/cccccc/333333?text=Profil"));
-                                }
-                            } else {
-                                profileImageView.setImage(new Image("https://placehold.co/100x100/cccccc/333333?text=Profil"));
-                                sidebarProfileImageView.setImage(new Image("https://placehold.co/80x80/cccccc/333333?text=Profil"));
-                            }
-                        });
-                    } else {
-                        Platform.runLater(() -> {
-                            String errorBody = "";
-                            try {
-                                errorBody = response.body() != null ? response.body().string() : "Unknown error";
-                            } catch (IOException ex) {
-                                ex.printStackTrace();
-                            }
-                            showAlert(AlertType.INFORMATION, "Informasi", "Data profil tidak ditemukan. Kode: " + response.code() + ", Pesan: " + errorBody);
-                        });
-                        profileImageView.setImage(new Image("https://placehold.co/100x100/cccccc/333333?text=Profil"));
-                        sidebarProfileImageView.setImage(new Image("https://placehold.co/80x80/cccccc/333333?text=Profil"));
-                    }
-                }
-            }
-        });
-    }
-
-    @FXML
-    private void handleProfileImageClick() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Pilih Foto Profil");
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif")
-        );
-
-        Stage currentStage = (Stage) profileImageView.getScene().getWindow();
-        File file = fileChooser.showOpenDialog(currentStage);
-
-        if (file != null) {
-            selectedProfileImageFile = file;
-            Image image = new Image(file.toURI().toString());
-            profileImageView.setImage(image);
-            sidebarProfileImageView.setImage(image);
-            showStatus("Foto profil dipilih. Klik 'Simpan Perubahan' untuk mengunggah.", "blue");
-        }
-    }
-
+    // Simpan atau perbarui data profil
     @FXML
     private void handleSave(ActionEvent event) {
-        final String userId = SessionManager.userId;
-        if (userId == null || userId.isEmpty()) {
-            showAlert(AlertType.ERROR, "Gagal", "Anda harus login untuk menyimpan perubahan profil.");
-            return;
-        }
-
+        final String userId = Session.getCurrentUserId();
         final String namaDepan = firstNameField.getText();
         final String namaBelakang = lastNameField.getText();
         final String telepon = phoneField.getText();
         final String alamat = addressField.getText();
         final String kota = cityField.getText();
 
-        if (selectedProfileImageFile != null) {
-            SupabaseService.uploadProfileImage(userId, selectedProfileImageFile, new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    Platform.runLater(() -> {
-                        showAlert(AlertType.ERROR, "Gagal", "Gagal mengunggah foto profil: " + e.getMessage());
-                        showStatus("Gagal mengunggah foto.", "red");
-                    });
-                }
-
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    if (response.isSuccessful()) {
-                        Platform.runLater(() -> {
-                            showStatus("Foto profil berhasil diunggah.", "green");
-                            saveOtherProfileData(userId, namaDepan, namaBelakang, telepon, alamat, kota);
-                        });
-                    } else {
-                        Platform.runLater(() -> {
-                            String errorBody = ""; // Initialize errorBody
-                            try {
-                                errorBody = response.body() != null ? response.body().string() : "Unknown error"; // Corrected here
-                            } catch (IOException ex) {
-                                ex.printStackTrace();
-                                errorBody = "Error reading response body"; // Fallback in case string() itself throws
-                            }
-                            showAlert(AlertType.ERROR, "Gagal", "Gagal mengunggah foto profil. Kode: " + response.code() + ", Pesan: " + errorBody);
-                            showStatus("Gagal mengunggah foto.", "red");
-                        });
-                    }
-                }
-            });
-        } else {
-            saveOtherProfileData(userId, namaDepan, namaBelakang, telepon, alamat, kota);
-        }
-    }
-
-    private void saveOtherProfileData(String userId, String namaDepan, String namaBelakang, String telepon, String alamat, String kota) {
         SupabaseService.getProfile(userId, new Callback() {
             public void onFailure(Call call, IOException e) {
-                Platform.runLater(() -> {
-                    showAlert(AlertType.ERROR, "Gagal", "Data profil gagal disimpan/diperbarui. Koneksi bermasalah.");
-                    showStatus("Gagal menyimpan data.", "red");
-                });
+                Platform.runLater(() -> showAlert(AlertType.ERROR, "Gagal", "Data gagal disimpan."));
             }
 
             public void onResponse(Call call, Response response) throws IOException {
@@ -243,10 +143,7 @@ public class ProfileController {
                         if (isEmpty) {
                             SupabaseService.createProfile(userId, namaDepan, namaBelakang, telepon, alamat, kota, new Callback() {
                                 public void onFailure(Call call, IOException e) {
-                                    Platform.runLater(() -> {
-                                        showAlert(AlertType.ERROR, "Gagal", "Data profil gagal disimpan.");
-                                        showStatus("Gagal menyimpan data.", "red");
-                                    });
+                                    Platform.runLater(() -> showAlert(AlertType.ERROR, "Gagal", "Data gagal disimpan."));
                                 }
 
                                 public void onResponse(Call call, Response response) {
@@ -258,18 +155,10 @@ public class ProfileController {
                                             Session.setAlamat(alamat);
                                             Session.setKota(kota);
 
-                                            showAlert(AlertType.INFORMATION, "Sukses", "Data profil berhasil disimpan.");
+                                            showAlert(AlertType.INFORMATION, "Sukses", "Data berhasil disimpan.");
                                             showStatus("Data berhasil disimpan.", "green");
-                                            selectedProfileImageFile = null;
                                         } else {
-                                            String errorBody = "";
-                                            try {
-                                                errorBody = response.body() != null ? response.body().string() : "Unknown error";
-                                            } catch (IOException ex) {
-                                                ex.printStackTrace();
-                                            }
-                                            showAlert(AlertType.ERROR, "Gagal", "Data profil gagal disimpan. Kode: " + response.code() + ", Pesan: " + errorBody);
-                                            showStatus("Gagal menyimpan data.", "red");
+                                            showAlert(AlertType.ERROR, "Gagal", "Data gagal disimpan.");
                                         }
                                     });
                                 }
@@ -277,10 +166,7 @@ public class ProfileController {
                         } else {
                             SupabaseService.updateProfile(userId, namaDepan, namaBelakang, telepon, alamat, kota, new Callback() {
                                 public void onFailure(Call call, IOException e) {
-                                    Platform.runLater(() -> {
-                                        showAlert(AlertType.ERROR, "Gagal", "Data profil gagal diperbarui. Koneksi bermasalah.");
-                                        showStatus("Gagal memperbarui data.", "red");
-                                    });
+                                    Platform.runLater(() -> showAlert(AlertType.ERROR, "Gagal", "Data gagal disimpan."));
                                 }
 
                                 public void onResponse(Call call, Response response) {
@@ -294,32 +180,15 @@ public class ProfileController {
 
                                             showAlert(AlertType.INFORMATION, "Diperbarui", "Data profil berhasil diperbarui.");
                                             showStatus("Data berhasil diperbarui.", "green");
-                                            selectedProfileImageFile = null;
                                         } else {
-                                            String errorBody = "";
-                                            try {
-                                                errorBody = response.body() != null ? response.body().string() : "Unknown error";
-                                            } catch (IOException ex) {
-                                                ex.printStackTrace();
-                                            }
-                                            showAlert(AlertType.ERROR, "Gagal", "Gagal memperbarui data. Kode: " + response.code() + ", Pesan: " + errorBody);
-                                            showStatus("Gagal memperbarui data.", "red");
+                                            showAlert(AlertType.ERROR, "Gagal", "Gagal memperbarui data.");
                                         }
                                     });
                                 }
                             });
                         }
                     } else {
-                        Platform.runLater(() -> {
-                            String errorBody = "";
-                            try {
-                                errorBody = response.body() != null ? response.body().string() : "Unknown error";
-                            } catch (IOException ex) {
-                                ex.printStackTrace();
-                            }
-                            showAlert(AlertType.ERROR, "Gagal", "Gagal memuat data profil. Kode: " + response.code() + ", Pesan: " + errorBody);
-                            showStatus("Gagal memuat data profil.", "red");
-                        });
+                        Platform.runLater(() -> showAlert(AlertType.ERROR, "Gagal", "Gagal memuat data profil."));
                     }
                 }
             }
