@@ -48,28 +48,33 @@ public class SupabaseService {
 
         client.newCall(request).enqueue(callback);
     }
-
-    public static void buatEvent(String judul, String kategori, String tempat, String deskripsi,
-                                 String host, String noHp, String sesi, String tanggal,
-                                 String waktuMulai, String waktuBerakhir, String jenisEvent,
-                                 Callback callback) {
-
+    // 🔹 CREATE TRANSACTION
+    public static void createTransaction(
+            Long buyerId,
+            Long sellerId,
+            Long quantity,
+            Double totalAmount,
+            Long ticketId,
+            String transactionType,
+            String paymentMethod,
+            String paymentStatus,
+            String paymentReference,
+            Callback callback
+    ) {
         String json = "{"
-                + "\"judul\":\"" + judul + "\","
-                + "\"kategori\":\"" + kategori + "\","
-                + "\"tempat\":\"" + tempat + "\","
-                + "\"deskripsi\":\"" + deskripsi + "\","
-                + "\"nama_host\":\"" + host + "\","
-                + "\"no_hp_host\":\"" + noHp + "\","
-                + "\"sesi\":\"" + sesi + "\","
-                + "\"tanggal_mulai\":\"" + tanggal + "\","
-                + "\"waktu_mulai\":\"" + waktuMulai + "\","
-                + "\"waktu_berakhir\":\"" + waktuBerakhir + "\","
-                + "\"jenis_event\":\"" + jenisEvent + "\""
+                + "\"buyer_id\":" + buyerId + ","
+                + "\"seller_id\":" + sellerId + ","
+                + "\"quantity\":" + quantity + ","
+                + "\"total_amount\":" + totalAmount + ","
+                + "\"ticket_id\":" + ticketId + ","
+                + "\"transaction_type\":\"" + transactionType + "\","
+                + "\"payment_methode\":\"" + paymentMethod + "\","
+                + "\"payment_status\":\"" + paymentStatus + "\","
+                + "\"payment_reference\":\"" + paymentReference + "\""
                 + "}";
 
         Request request = new Request.Builder()
-                .url(PROJECT_URL + "/rest/v1/event") // Pastikan endpoint dan table-nya benar!
+                .url(PROJECT_URL + "/rest/v1/transactions")
                 .addHeader("apikey", API_KEY)
                 .addHeader("Authorization", "Bearer " + API_KEY)
                 .addHeader("Content-Type", "application/json")
