@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox prefHeight="600.0" prefWidth="600.0" style="-fx-background-color: #0F1017; -fx-background-radius: 10;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sapatatix.controller.OrderSummaryController">
+    <children>
+        <HBox alignment="CENTER_LEFT" prefHeight="50.0" style="-fx-background-color: #1A1C28;">
+            <padding>
+                <Insets left="20.0" right="20.0" />
+            </padding>
+            <children>
+                <Button onAction="#handleBack" style="-fx-background-color: transparent;" text="←" textFill="WHITE">
+                    <font>
+                        <Font size="20.0" />
+                    </font>
+                </Button>
+                <Label text="Rangkuman Pesanan" textFill="WHITE">
+                    <font>
+                        <Font name="Segoe UI Bold" size="18.0" />
+                    </font>
+                    <HBox.margin>
+                        <Insets left="10.0" />
+                    </HBox.margin>
+                </Label>
+                <Region HBox.hgrow="ALWAYS" />
+            </children>
+        </HBox>
+
+        <VBox VBox.vgrow="ALWAYS">
+            <padding>
+                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+            </padding>
+            <children>
+                <VBox alignment="TOP_LEFT" prefHeight="120.0" prefWidth="560.0" style="-fx-background-color: #B83D6E; -fx-background-radius: 10; -fx-border-color: #B83D6E; -fx-border-width: 1; -fx-border-radius: 10;">
+                    <VBox.margin>
+                        <Insets bottom="20.0" />
+                    </VBox.margin>
+                    <padding>
+                        <Insets bottom="10.0" left="15.0" right="15.0" top="10.0" />
+                    </padding>
+                    <children>
+                        <Label fx:id="summaryTicketTypeLabel" text="Jenis Tiket" textFill="WHITE">
+                            <font>
+                                <Font name="Segoe UI Bold" size="16.0" />
+                            </font>
+                        </Label>
+                        <Label fx:id="summaryVisitorNameLabel" text="Nama Pengunjung" textFill="WHITE">
+                            <font>
+                                <Font name="Segoe UI" size="14.0" />
+                            </font>
+                        </Label>
+                        <Label fx:id="summaryVisitorEmailLabel" text="pengunjung@server.com" textFill="WHITE">
+                            <font>
+                                <Font name="Segoe UI" size="14.0" />
+                            </font>
+                        </Label>
+                        <HBox alignment="CENTER_LEFT" VBox.vgrow="ALWAYS">
+                            <children>
+                                <Region HBox.hgrow="ALWAYS" />
+                                <Label fx:id="summaryTicketPriceLabel" text="Rp600.000" textFill="WHITE">
+                                    <font>
+                                        <Font name="Segoe UI Bold" size="16.0" />
+                                    </font>
+                                    <HBox.margin>
+                                        <Insets right="5.0" />
+                                    </HBox.margin>
+                                </Label>
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+
+                <ImageView fx:id="qrCodeImageView" fitHeight="200.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" style="-fx-background-color: WHITE; -fx-padding: 10;">
+                    <VBox.margin>
+                        <Insets alignment="CENTER" bottom="20.0" />
+                    </VBox.margin>
+                </ImageView>
+            </children>
+        </VBox>
+
+        <VBox style="-fx-background-color: #1A1C28;">
+            <padding>
+                <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />
+            </padding>
+            <children>
+                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                    <children>
+                        <VBox>
+                            <children>
+                                <Label text="Subtotal :" textFill="WHITE">
+                                    <font>
+                                        <Font name="Segoe UI" size="14.0" />
+                                    </font>
+                                </Label>
+                                <Label text="Pajak :" textFill="WHITE">
+                                    <font>
+                                        <Font name="Segoe UI" size="14.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox alignment="TOP_RIGHT" HBox.hgrow="ALWAYS">
+                            <children>
+                                <Label fx:id="summarySubtotalLabel" text="Rp0" textFill="WHITE">
+                                    <font>
+                                        <Font name="Segoe UI" size="14.0" />
+                                    </font>
+                                </Label>
+                                <Label fx:id="summaryTaxLabel" text="Rp0" textFill="WHITE">
+                                    <font>
+                                        <Font name="Segoe UI" size="14.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                    <children>
+                        <Label text="Total Pesanan :" textFill="WHITE">
+                            <font>
+                                <Font name="Segoe UI Bold" size="16.0" />
+                            </font>
+                        </Label>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label fx:id="summaryTotalOrderLabel" text="Rp0" textFill="#B83D6E">
+                            <font>
+                                <Font name="Segoe UI Bold" size="18.0" />
+                            </font>
+                        </Label>
+                    </children>
+                    <VBox.margin>
+                        <Insets top="10.0" />
+                    </VBox.margin>
+                </HBox>
+                <Button onAction="#handleFinish" prefHeight="45.0" prefWidth="600.0" style="-fx-background-color: #B83D6E; -fx-background-radius: 8;" text="Selesai" textFill="WHITE">
+                    <font>
+                        <Font name="Segoe UI Bold" size="16.0" />
+                    </font>
+                    <HBox.margin>
+                        <Insets top="10.0" />
+                    </HBox.margin>
+                </Button>
+            </children>
+        </VBox>
+    </children>
+</VBox>
