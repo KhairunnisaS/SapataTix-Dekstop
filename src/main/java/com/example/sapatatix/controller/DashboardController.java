@@ -17,7 +17,7 @@ public class DashboardController {
 
     @FXML
     public void handleGoToBuatEvent() {
-        loadFXML("/com/example/sapatatix/FXML/BuatEventEdit.fxml", "Buat Event");
+        loadFXML("/com/example/sapatatix/FXML/BuatEventDeskripsi.fxml", "Buat Event");
     }
 
     @FXML

@@ -1,8 +1,10 @@
 package com.example.sapatatix.service;
 
 import okhttp3.*;
-
+import org.json.JSONArray;
+import org.json.JSONObject;
 import java.io.IOException;
+import java.io.File;
 
 public class SupabaseService {
     private static final String PROJECT_URL = "https://mcqhhdeqkuklvxglpycb.supabase.co"; // GANTI: Sesuaikan dengan URL project Supabase kamu
@@ -48,40 +50,83 @@ public class SupabaseService {
 
         client.newCall(request).enqueue(callback);
     }
-    // 🔹 CREATE TRANSACTION
-    public static void createTransaction(
-            Long buyerId,
-            Long sellerId,
-            Long quantity,
-            Double totalAmount,
-            Long ticketId,
-            String transactionType,
-            String paymentMethod,
-            String paymentStatus,
-            String paymentReference,
-            Callback callback
-    ) {
-        String json = "{"
-                + "\"buyer_id\":" + buyerId + ","
-                + "\"seller_id\":" + sellerId + ","
-                + "\"quantity\":" + quantity + ","
-                + "\"total_amount\":" + totalAmount + ","
-                + "\"ticket_id\":" + ticketId + ","
-                + "\"transaction_type\":\"" + transactionType + "\","
-                + "\"payment_methode\":\"" + paymentMethod + "\","
-                + "\"payment_status\":\"" + paymentStatus + "\","
-                + "\"payment_reference\":\"" + paymentReference + "\""
-                + "}";
+
+    public static void buatEvent(String judul, String kategori, String tempat, String deskripsi,
+                                 String host, String noHp, String sesi, String tanggal,
+                                 String waktuMulai, String waktuBerakhir, String jenisEvent, String userId,
+                                 Callback callback) {
+
+        System.out.println("MULAI kirim ke Supabase...");
+
+        JSONObject json = new JSONObject();
+        json.put("judul", judul);
+        json.put("kategori", kategori);
+        json.put("tempat", tempat);
+        json.put("deskripsi", deskripsi);
+        json.put("nama_host", host);
+        json.put("no_hp_host", noHp);
+        json.put("sesi", sesi);
+        json.put("tanggal_mulai", tanggal);
+        json.put("waktu_mulai", waktuMulai);
+        json.put("waktu_berakhir", waktuBerakhir);
+        json.put("jenis_event", jenisEvent);
+
+        // Pastikan userId adalah integer, bukan string kosong
+        if (userId != null && !userId.isEmpty()) {
+            json.put("user_id", Integer.parseInt(userId));
+        } else {
+            System.out.println("❗ userId kosong atau null!");
+        }
+
+        RequestBody body = RequestBody.create(json.toString(), JSON);
 
         Request request = new Request.Builder()
-                .url(PROJECT_URL + "/rest/v1/transactions")
+                .url(PROJECT_URL + "/rest/v1/event")
                 .addHeader("apikey", API_KEY)
                 .addHeader("Authorization", "Bearer " + API_KEY)
                 .addHeader("Content-Type", "application/json")
-                .post(RequestBody.create(json, JSON))
+                .addHeader("Prefer", "return=representation") // HARUS ADA supaya respons JSON-nya termasuk 'id'
+                .post(body) // ⬅⬅⬅ INI yang kurang di kodingan kamu sebelumnya
+                .build();
+
+        client.newCall(request).enqueue(callback);
+
+        System.out.println("SELESAI kirim ke Supabase (asynchronous)");
+    }
+
+    public static void insertEvent(JSONObject data, Callback callback) {
+        RequestBody body = RequestBody.create(data.toString(), MediaType.get("application/json"));
+        Request request = new Request.Builder()
+                .url(PROJECT_URL + "/events")
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", "Bearer " + API_KEY)
+                .post(body)
                 .build();
 
         client.newCall(request).enqueue(callback);
     }
+
+
+    public static void uploadBanner(String eventId, File imageFile, Callback callback) {
+        JSONObject json = new JSONObject();
+        json.put("banner_url", imageFile.getName()); // atau imageFile.getAbsolutePath() jika kamu ingin path penuh
+
+        RequestBody body = RequestBody.create(
+                json.toString(),
+                MediaType.parse("application/json")
+        );
+
+        Request request = new Request.Builder()
+                .url(PROJECT_URL + "/rest/v1/event?id=eq." + eventId) // ← PENTING: harus ada /rest/v1/
+                .patch(body)
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", "Bearer " + API_KEY)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Prefer", "return=representation")
+                .build();
+
+        client.newCall(request).enqueue(callback);
+    }
+
 
 }
