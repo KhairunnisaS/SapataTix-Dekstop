@@ -24,7 +24,6 @@ import javafx.geometry.Insets;
 import javafx.scene.text.Font;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.control.TextField; // Import TextField
-import javafx.scene.control.ComboBox; // Import ComboBox (not used in actual FXML, but might be from previous draft)
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -50,8 +49,12 @@ public class DashboardController {
     @FXML
     public void initialize() {
         // Inisialisasi style untuk kategori "All" sebagai yang terpilih saat awal
-        allCategoryLabel.setStyle("-fx-underline: true; -fx-font-weight: bold; -fx-text-fill: #b83d6e;");
-        lastSelectedCategoryLabel = allCategoryLabel;
+        // Pastikan allCategoryLabel tidak null sebelum mengaksesnya
+        if (allCategoryLabel != null) {
+            allCategoryLabel.setStyle("-fx-underline: true; -fx-font-weight: bold; -fx-text-fill: #b83d6e;");
+            lastSelectedCategoryLabel = allCategoryLabel;
+        }
+
 
         // Atur event handler untuk memicu pencarian/filter
         if (searchInputField != null) {
